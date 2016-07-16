@@ -1,0 +1,95 @@
+<html>
+<head>
+  <style>
+
+    body {
+      background: #e3e3e3;
+    }
+
+    button {
+    	padding: 5px 20px;
+    	cursor: pointer;
+    }
+
+    h3 {
+    	margin: 0;
+    }
+
+    .col {
+    	width: 50%;
+      float: left;
+    }
+
+    h4 {
+    	text-align: center;
+    }
+
+    .card {
+      background: white;
+      border-radius: 2px;
+      border: 1px solid #cccccc;
+      box-shadow: 1px 1px 1px 0px gray;
+      font-family: monospace;
+      margin-bottom: 5px;
+      overflow: auto;
+      padding: 10px;
+    }
+
+    .item {
+      background-color: #eceff1;
+      border: 1px solid #e3e3e3;
+      height: 30px;
+      margin: 10px;
+      transition: background-color .3s ease-in;
+      text-align: center;
+    }
+
+    .timer .loader {
+    	background: #ffd180;
+    	height: 100%;
+    	text-align: center;
+    	transition-property: width;
+    	transition-timing-function: linear;
+    	width: 0%;
+    }
+
+    .timer .loader.animating {
+      width: 100%;
+    }
+
+    .item.file.rendered {
+      background-color: #00e676;
+    }
+
+  </style>
+</head>
+<body>
+  <h2>JavaScript Async Fun</h2>
+  <div class="card">
+    <h3>
+      Exercise 1 - callbacks
+      <button class="run" type="button" onclick="exercise1()">Run</button>
+    </h3>
+    <div class="col">
+      <h4>Render</h4>
+      <div class="item file1 file"></div>
+      <div class="item file2 file"></div>
+      <div class="item file3 file"></div>
+    </div>
+    <div class="col">
+      <h4>Received</h4>
+      <div class="item file1 timer received">
+        <div class="loader">file1</div>
+      </div>
+      <div class="item file2 timer received">
+        <div class="loader">file2</div>
+      </div>
+      <div class="item file3 timer received">
+        <div class="loader">file3</div>
+      </div>
+    </div>
+  </div>
+  <script src="./utils.js"></script>
+  <script src="./async.js"></script>
+</body>
+</html>
