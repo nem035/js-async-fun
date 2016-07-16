@@ -58,18 +58,15 @@ const contents = {
 };
 
 // map containing a flag indicating if file is rendered
-const renders = {
+const rendered = {
   file1: false,
   file2: false,
   file3: false
 };
 
-['file1', 'file2', 'file3'].forEach(file => {
-  getFile(file);
-});
-
-const rendered = x => renders[x];
-const received = x => contents(x) !== undefined;
+getFile('file1');
+getFile('file2');
+getFile('file3');
 
 function getFile(file) {
   getFromServer(file, response => {
@@ -83,9 +80,9 @@ function getFile(file) {
     // stop the loop
     // otherwise continue looping
     // and render unrendered files
-    files.every(file => {
-      if (received(file)) {
-        if (!rendered(file)) {
+    ['file1', 'file2', 'file3'].every(file => {
+      if (contents[file]) {
+        if (!rendered[file]) {
           render(file, contents[file]);
         }
         return true;
@@ -125,15 +122,15 @@ function getFile(file) {
       </div>
     </div>
     <div class="code-container">
-      <pre><code>const thunkFile1 = getFile('file1');
-const thunkFile2 = getFile('file2');
-const thunkFile3 = getFile('file3');
+      <pre><code>const thunk1 = getFile('file1');
+const thunk2 = getFile('file2');
+const thunk3 = getFile('file3');
 
-thunkFile1(contents1 => {
+thunk1(contents1 => {
   render('file1', contents1);
-  thunkFile2(contents2 => {
+  thunk2(contents2 => {
     render('file2', contents2);
-    thunkFile3(contents3 => {
+    thunk3(contents3 => {
       render('file3', contents3);
     });
   });
@@ -170,6 +167,9 @@ function getFile(file) {
     <h3>
       Promises
       <button class="run" type="button" onclick="promises()">Run</button>
+      <button class="code" type="button" onclick="toggleCode('promises')">
+        Code <span>&#9650;</span>
+      </button>
     </h3>
     <div class="col">
       <h4>Render</h4>
@@ -188,6 +188,28 @@ function getFile(file) {
       <div class="item file3 timer received">
         <div class="loader">file3</div>
       </div>
+    </div>
+    <div class="code-container">
+      <pre><code>const promise1 = getFile('file1');
+const promise2 = getFile('file2');
+const promise3 = getFile('file3');
+
+promise1.then(contents1 => {
+  render('file1', contents1);
+  return promise2;
+}).then(contents2 => {
+  render('file2', contents2);
+  return promise3;
+}).then(contents3 => {
+  render('file3', contents3);
+});
+
+// A promise maker
+function getFile(file) {
+  return new Promise(resolve => {
+    fakeAjax('promises', file, resolve);
+  });
+}</code></pre>
     </div>
   </div>
 

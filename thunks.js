@@ -121,15 +121,15 @@ function thunks() {
 
   start('thunks');
 
-  const thunkFile1 = getFile('file1');
-  const thunkFile2 = getFile('file2');
-  const thunkFile3 = getFile('file3');
+  const thunk1 = getFile('file1');
+  const thunk2 = getFile('file2');
+  const thunk3 = getFile('file3');
 
-  thunkFile1(contents1 => {
+  thunk1(contents1 => {
     renderFile('file1', contents1);
-    thunkFile2(contents2 => {
+    thunk2(contents2 => {
       renderFile('file2', contents2);
-      thunkFile3(contents3 => {
+      thunk3(contents3 => {
         renderFile('file3', contents3);
         finish('thunks');
       });

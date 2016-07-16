@@ -49,16 +49,16 @@ function promises() {
 
   start('promises');
 
-  const promiseFile1 = getFile('file1');
-  const promiseFile2 = getFile('file2');
-  const promiseFile3 = getFile('file3');
+  const promise1 = getFile('file1');
+  const promise2 = getFile('file2');
+  const promise3 = getFile('file3');
 
-  promiseFile1.then(contents1 => {
+  promise1.then(contents1 => {
     renderFile('file1', contents1);
-    return promiseFile2;
+    return promise2;
   }).then(contents2 => {
     renderFile('file2', contents2);
-    return promiseFile3;
+    return promise3;
   }).then(contents3 => {
     renderFile('file3', contents3);
     finish('promises');
@@ -66,10 +66,8 @@ function promises() {
 
   // A promise maker
   function getFile(file) {
-    return new Promise((resolve, reject) => {
-      fakeAjax('promises', file, (response) => {
-        resolve(response);
-      });
+    return new Promise(resolve => {
+      fakeAjax('promises', file, resolve);
     });
   }
 
