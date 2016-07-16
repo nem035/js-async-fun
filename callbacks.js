@@ -1,32 +1,36 @@
 /**
 Callbacks requires us to maintain
 some sort of state to ensure our
-reactions to the callbacks happen
+reactions to those callbacks happen
 in certain order.
 
-Callbacks introduce Inversion of
-Control where the code conceptually
-split into the one we execute first
-and the callbacks which get handed
+Callbacks introduce what is known as
+Inversion of Control where the code
+is conceptually split into two parts:
+
+- the one we execute first, and
+- the callbacks which get handed
 off to the another party (control
 inversion) to be executed some time
 later
 
-@example
+<pre>
 // first half
 later(() => {
   // second half
   // we are not in control
   // if/when this gets executed
 });
+</pre>
 
 This introduces trust issues with the
 other party executing our callback. We
 have to trust that they will call it
 in the exact way we need them to and
-exactly many times we need them to but
-we have no guarantess that the code
-will be called at all.
+exactly as many times as we need them
+to but we have no guarantess on how
+the code actually gets called and if
+it gets called at all.
 */
 function callbacks() {
 

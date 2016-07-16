@@ -1,4 +1,43 @@
-/**
+# JS-Async-Fun
+Fun with Asynchronous JavaScript
+<a name="callbacks"></a>
+
+## callbacks()
+Callbacks requires us to maintain
+some sort of state to ensure our
+reactions to those callbacks happen
+in certain order.
+
+Callbacks introduce what is known as
+Inversion of Control where the code
+is conceptually split into two parts:
+
+- the one we execute first, and
+- the callbacks which get handed
+off to the another party (control
+inversion) to be executed some time
+later
+
+<pre>// first half
+later(() => {
+  // second half
+  // we are not in control
+  // if/when this gets executed
+});</pre>
+
+This introduces trust issues with the
+other party executing our callback. We
+have to trust that they will call it
+in the exact way we need them to and
+exactly as many times as we need them
+to but we have no guarantess on how
+the code actually gets called and if
+it gets called at all.
+
+**Kind**: global function  
+<a name="thunks"></a>
+
+## thunks()
 A thunk is a function that
 already contains everything
 it needs to perform its
@@ -9,16 +48,14 @@ world. Another way to think
 of a thunk is a wrapper for
 a value.
 
-<pre>
-// synchronous thunk
+<pre>// synchronous thunk
 function add(x, y) {
   return x + y;
 }
 
 function thunk() {
   return add(10, 15);
-}
-</pre>
+}</pre>
 
 An asynchronous thunk is the
 same as a synchronous thunk
@@ -30,8 +67,7 @@ wrappers around values.
 
 Thunks are the basis for Promises.
 
-<pre>
-// asynchronous thunk
+<pre>// asynchronous thunk
 function add(x, y, cb) {
   cb(x + y);
 }
@@ -42,14 +78,12 @@ function thunk(cb) {
 
 thunk(function(sum) {
   sum; // 25
-});
-</pre>
+});</pre>
 
 We can create a function that will
 create thunks for us
 
-<pre>
-function makeThunk(fn, ...args) {
+<pre>function makeThunk(fn, ...args) {
   return function(cb) {
     args.push(cb)
     fn(...args);
@@ -64,8 +98,7 @@ const thunk = makeThunk(add, 10, 15);
 
 thunk(function(sum) {
   sum; // 25
-});
-</pre>
+});</pre>
 
 All of the above were examples
 of lazy thunks.
@@ -80,8 +113,7 @@ is a thunk that precomputes its
 value when created and then returns
 it on all subsequent calls.
 
-<pre>
-// asynchronous active thunk
+<pre>// asynchronous active thunk
 function add(x, y, cb) {
   cb(x + y);
 }
@@ -114,54 +146,6 @@ function makeActiveThunk() {
 const th = makeActiveThunk();
 th(function(sum) {
   sum; // 25
-});
-</pre>
-*/
-function thunks() {
+});</pre>
 
-  start('thunks');
-
-  const thunkFile1 = getFile('file1');
-  const thunkFile2 = getFile('file2');
-  const thunkFile3 = getFile('file3');
-
-  thunkFile1(contents1 => {
-    renderFile('file1', contents1);
-    thunkFile2(contents2 => {
-      renderFile('file2', contents2);
-      thunkFile3(contents3 => {
-        renderFile('file3', contents3);
-        finish('thunks');
-      });
-    });
-  });
-
-  // A thunk maker that caches the
-  // callback or the response,
-  // depending on which is obtained
-  // first and executes the callback
-  // with the response, once both are
-  // received
-  function getFile(file) {
-    let contents;
-    let callback;
-    fakeAjax('thunks', file, (response) => {
-      if (callback === undefined) {
-        contents = response;
-      } else {
-        callback(response);
-      }
-    });
-    return function(cb) {
-      if (contents === undefined) {
-        callback = cb;
-      } else {
-        cb(contents);
-      }
-    };
-  }
-
-  function renderFile(file, contents) {
-    render('thunks', file, contents);
-  }
-}
+**Kind**: global function  
