@@ -2,9 +2,9 @@ const renderDelay = 100;
 
 function fakeAjax(file, cb) {
   const fakeResponses = {
-    file1: 'The first text',
-    file2: 'The middle text',
-    file3: 'The last text'
+    file1: 'file1',
+    file2: 'file2',
+    file3: 'file3'
   };
 
   const randomDelay = (Math.round(Math.random() * 1E4) % 8000) + 1000;
@@ -41,15 +41,20 @@ function render(file, text) {
 
 function receive(file) {
   log(`Received ${file}`);
-  const logBox = document.querySelector(`.timer.${file}.loading`);
-  logBox.className = logBox.className.replace('loading', 'received');
+  const timer = document.querySelector(`.timer.${file}.loading`);
+  const loader = findChildByClass(timer, 'loader');
+  setTimeout(() => {
+    loader.className += ' finished';
+    timer.className += ' done';
+  }, renderDelay);
+  timer.className = timer.className.replace('loading', 'received');
 }
 
 function load(file, ms) {
   log(`Requesting: ${file}. Response time: ${ms}`);
-  const logBox = document.querySelector(`.timer.${file}.received`);
-  logBox.className = logBox.className.replace('received', 'loading');
-  const loader = findChildByClass(logBox, 'loader');
+  const timer = document.querySelector(`.timer.${file}.received`);
+  timer.className = timer.className.replace('received', 'loading');
+  const loader = findChildByClass(timer, 'loader');
   setTimeout(() => {
     loader.style.transitionDuration = `${ms + renderDelay}ms`;
     loader.className += ' animating';
@@ -65,18 +70,19 @@ function nodes(cls) {
 }
 
 function initRenders() {
-  nodes('.item.file').forEach(node => {
+  nodes('.file').forEach(node => {
     removeChildren(node);
     node.className = node.className.replace('rendered', '');
   });
 }
 
 function initLogs() {
-  nodes('.item.timer').forEach((node, idx) => {
-    node.className = `item file${idx + 1} timer received`;
-    const loader = findChildByClass(node, 'loader');
+  nodes('.timer').forEach((timer, idx) => {
+    timer.className = `item file${idx + 1} timer received`;
+    const loader = findChildByClass(timer, 'loader');
     loader.style.transitionDuration = '0ms';
     loader.className = loader.className.replace('animating', '');
+    loader.className = loader.className.replace('finished', '');
   });
 }
 

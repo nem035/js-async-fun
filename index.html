@@ -29,7 +29,6 @@
       border-radius: 2px;
       border: 1px solid #cccccc;
       box-shadow: 1px 1px 1px 0px gray;
-      font-family: monospace;
       margin-bottom: 5px;
       overflow: auto;
       padding: 10px;
@@ -38,10 +37,23 @@
     .item {
       background-color: #eceff1;
       border: 1px solid #e3e3e3;
+      font-family: monospace;
       height: 30px;
       margin: 10px;
       transition: background-color .3s ease-in;
       text-align: center;
+    }
+
+    .problem {
+	     font-size: 20px;
+     }
+
+    code {
+    	background: #e3e3e3;
+    	border: 1px solid #cfd8dc;
+    	font-family: monospace;
+    	font-size: 16px;
+    	padding: 1px 2px;
     }
 
     .timer .loader {
@@ -57,17 +69,39 @@
       width: 100%;
     }
 
-    .item.file.rendered {
+    .timer .loader.finished {
+      background: transparent;
+    }
+
+    .timer.done {
       background-color: #00e676;
+    }
+
+    .file.rendered {
+      background-color: #80d8ff;
     }
 
   </style>
 </head>
 <body>
   <h2>JavaScript Async Fun</h2>
-  <div class="card">
+  <div class="card problem">
+    <ul>
+      <li>
+        Request <code>file1</code>, <code>file2</code> and <code>file3</code>
+        <strong>at the same time</strong> (in "parallel")
+      </li>
+      <li>
+        <strong>Render them ASAP</strong> (don't just blindly wait for all to finish loading)
+      </li>
+      <li>
+        BUT, <strong>render them in proper (obvious) order</strong>: <code>file1</code>, <code>file2</code>, <code>file3</code>.
+      </li>
+    </ul>
+  </div>
+  <div class="card callbacks">
     <h3>
-      Exercise 1 - callbacks
+      Callbacks
       <button class="run" type="button" onclick="exercise1()">Run</button>
     </h3>
     <div class="col">
