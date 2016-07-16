@@ -1,8 +1,11 @@
 const renderDelay = 100;
-const files = ['file1', 'file2', 'file3'];
 
 function fakeAjax(card, file, cb) {
-  const fakeResponses = toFileObject(file => file);
+  const fakeResponses = {
+    file1: 'file1',
+    file2: 'file2',
+    file3: 'file3'
+  };
 
   const randomDelay = (Math.round(Math.random() * 1E4) % 8000) + 1000;
   load(card, file, randomDelay);
@@ -15,13 +18,6 @@ function fakeAjax(card, file, cb) {
 
 function log(msg) {
   console.info(msg);
-}
-
-function toFileObject(cb) {
-  return files.reduce((obj, file) => {
-    obj[file] = cb(file);
-    return obj;
-  }, {});
 }
 
 function removeChildren(node) {
