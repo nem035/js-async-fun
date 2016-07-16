@@ -55,6 +55,16 @@ function render(card, file, text) {
   }, renderDelay);
 }
 
+function makeRenderer(type) {
+  return function(file, contents) {
+    render(type, file, contents);
+  };
+}
+
+const renderCallback = makeRenderer('callbacks');
+const renderThunk = makeRenderer('thunks');
+const renderPromise = makeRenderer('promises');
+
 function receive(card, file) {
   log(`Received ${file}`);
   const timer = document.querySelector(`.card.${card} .timer.${file}.loading`);
@@ -99,7 +109,7 @@ function initLogs(card) {
 }
 
 function start(card) {
-  console.log('------ Callbacks ------');
+  console.log(`------ ${card} ------`);
   document.querySelector(`.card.${card} button.run`).disabled = true;
   initRenders(card);
   initLogs(card);

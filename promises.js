@@ -7,15 +7,15 @@ function promises() {
   const promise3 = getFile('file3');
 
   promise1.then(contents1 => {
-    renderFile('file1', contents1);
+    renderPromise('file1', contents1);
   }).then(() => {
     return promise2;
   }).then(contents2 => {
-    renderFile('file2', contents2);
+    renderPromise('file2', contents2);
   }).then(() => {
     return promise3;
   }).then(contents3 => {
-    renderFile('file3', contents3);
+    renderPromise('file3', contents3);
   }).then(() => {
     finish('promises');
   });
@@ -25,9 +25,5 @@ function promises() {
     return new Promise(resolve => {
       fakeAjax('promises', file, resolve);
     });
-  }
-
-  function renderFile(file, contents) {
-    render('promises', file, contents);
   }
 }

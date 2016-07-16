@@ -40,7 +40,7 @@ function callbacks() {
         if (contents[file]) {
           if (!rendered[file]) {
             rendered[file] = true;
-            renderFile(file, contents[file]);
+            renderCallback(file, contents[file]);
             if (allRendered()) {
               finish('callbacks');
             }
@@ -51,9 +51,5 @@ function callbacks() {
         }
       });
     });
-  }
-
-  function renderFile(file, contents) {
-    render('callbacks', file, contents);
   }
 }

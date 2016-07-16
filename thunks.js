@@ -7,11 +7,11 @@ function thunks() {
   const thunk3 = getFile('file3');
 
   thunk1(contents1 => {
-    renderFile('file1', contents1);
+    renderThunk('file1', contents1);
     thunk2(contents2 => {
-      renderFile('file2', contents2);
+      renderThunk('file2', contents2);
       thunk3(contents3 => {
-        renderFile('file3', contents3);
+        renderThunk('file3', contents3);
         finish('thunks');
       });
     });
@@ -40,9 +40,5 @@ function thunks() {
         cb(contents);
       }
     };
-  }
-
-  function renderFile(file, contents) {
-    render('thunks', file, contents);
   }
 }
