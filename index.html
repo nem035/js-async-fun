@@ -85,6 +85,7 @@
 </head>
 <body>
   <h2>JavaScript Async Fun</h2>
+
   <div class="card problem">
     <ul>
       <li>
@@ -99,10 +100,11 @@
       </li>
     </ul>
   </div>
+
   <div class="card callbacks">
     <h3>
       Callbacks
-      <button class="run" type="button" onclick="exercise1()">Run</button>
+      <button class="run" type="button" onclick="callbacks()">Run</button>
     </h3>
     <div class="col">
       <h4>Render</h4>
@@ -123,7 +125,34 @@
       </div>
     </div>
   </div>
+
+  <div class="card thunks">
+    <h3>
+      Callbacks
+      <button class="run" type="button" onclick="thunks()">Run</button>
+    </h3>
+    <div class="col">
+      <h4>Render</h4>
+      <div class="item file1 file"></div>
+      <div class="item file2 file"></div>
+      <div class="item file3 file"></div>
+    </div>
+    <div class="col">
+      <h4>Received</h4>
+      <div class="item file1 timer received">
+        <div class="loader">file1</div>
+      </div>
+      <div class="item file2 timer received">
+        <div class="loader">file2</div>
+      </div>
+      <div class="item file3 timer received">
+        <div class="loader">file3</div>
+      </div>
+    </div>
+  </div>
+
   <script src="./utils.js"></script>
-  <script src="./async.js"></script>
+  <script src="./callbacks.js"></script>
+  <script src="./thunks.js"></script>
 </body>
 </html>

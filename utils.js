@@ -1,19 +1,27 @@
 const renderDelay = 100;
+const files = ['file1', 'file2', 'file3'];
 
-function fakeAjax(file, cb) {
-  const fakeResponses = {
-    file1: 'file1',
-    file2: 'file2',
-    file3: 'file3'
-  };
+function fakeAjax(card, file, cb) {
+  const fakeResponses = toFileObject(file => file);
 
   const randomDelay = (Math.round(Math.random() * 1E4) % 8000) + 1000;
-  load(file, randomDelay);
+  load(card, file, randomDelay);
   console.info();
   setTimeout(function() {
-    receive(file);
+    receive(card, file);
     cb(fakeResponses[file]);
   }, randomDelay);
+}
+
+function log(msg) {
+  console.info(msg);
+}
+
+function toFileObject(cb) {
+  return files.reduce((obj, file) => {
+    obj[file] = cb(file);
+    return obj;
+  }, {});
 }
 
 function removeChildren(node) {
@@ -30,18 +38,18 @@ function findChildByClass({ childNodes }, cls) {
     );
 }
 
-function render(file, text) {
+function render(card, file, text) {
   setTimeout(() => {
     log(`Rendered ${file}: ${text}`);
-    const fileBox = document.querySelector(`.file.${file}`);
+    const fileBox = document.querySelector(`.card.${card} .file.${file}`);
     fileBox.appendChild(document.createTextNode(text));
     fileBox.className += ' rendered';
   }, renderDelay);
 }
 
-function receive(file) {
+function receive(card, file) {
   log(`Received ${file}`);
-  const timer = document.querySelector(`.timer.${file}.loading`);
+  const timer = document.querySelector(`.card.${card} .timer.${file}.loading`);
   const loader = findChildByClass(timer, 'loader');
   setTimeout(() => {
     loader.className += ' finished';
@@ -50,9 +58,9 @@ function receive(file) {
   timer.className = timer.className.replace('loading', 'received');
 }
 
-function load(file, ms) {
+function load(card, file, ms) {
   log(`Requesting: ${file}. Response time: ${ms}`);
-  const timer = document.querySelector(`.timer.${file}.received`);
+  const timer = document.querySelector(`.card.${card} .timer.${file}.received`);
   timer.className = timer.className.replace('received', 'loading');
   const loader = findChildByClass(timer, 'loader');
   setTimeout(() => {
@@ -61,23 +69,19 @@ function load(file, ms) {
   }, renderDelay);
 }
 
-function log(msg) {
-  console.info(msg);
-}
-
 function nodes(cls) {
   return Array.from(document.querySelectorAll(cls));
 }
 
-function initRenders() {
-  nodes('.file').forEach(node => {
+function initRenders(card) {
+  nodes(`.card.${card} .file`).forEach(node => {
     removeChildren(node);
     node.className = node.className.replace('rendered', '');
   });
 }
 
-function initLogs() {
-  nodes('.timer').forEach((timer, idx) => {
+function initLogs(card) {
+  nodes(`.card.${card} .timer`).forEach((timer, idx) => {
     timer.className = `item file${idx + 1} timer received`;
     const loader = findChildByClass(timer, 'loader');
     loader.style.transitionDuration = '0ms';
@@ -86,13 +90,15 @@ function initLogs() {
   });
 }
 
-function start() {
+function start(card) {
   console.log('------ Callbacks ------');
-  document.querySelector('button.run').disabled = true;
-  initRenders();
-  initLogs();
+  document.querySelector(`.card.${card} button.run`).disabled = true;
+  initRenders(card);
+  initLogs(card);
 };
 
-function finish() {
-  document.querySelector('button.run').disabled = false;
+function finish(card) {
+  setTimeout(() => {
+    document.querySelector(`.card.${card} button.run`).disabled = false;
+  }, renderDelay);
 }
