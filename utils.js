@@ -87,6 +87,7 @@ function initLogs() {
 }
 
 function start() {
+  console.log('------ Callbacks ------');
   document.querySelector('button.run').disabled = true;
   initRenders();
   initLogs();
