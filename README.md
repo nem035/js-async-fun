@@ -8,7 +8,7 @@ following problem
 
 ## Patterns
 
-### Callbacks
+### Callbacks (Hell)
 Callbacks requires us to maintain
 some sort of state to ensure our
 reactions to those callbacks happen
@@ -28,8 +28,7 @@ later
 // first half
 later(() => {
   // second half
-  // we are not in control
-  // if/when this gets executed
+  // we are not in control if/when this gets executed
 });
 ```
 
@@ -38,11 +37,9 @@ other party executing our callback. We
 have to trust that they will call it
 in the exact way we need them to and
 exactly as many times as we need them
-to but we have no guarantess on how
+to but we have no guarantees on how
 the code actually gets called and if
 it gets called at all.
-
-<a name="thunks"></a>
 
 ### Thunks
 A thunk is a function that
@@ -73,11 +70,6 @@ except instead of returning
 a value, it accepts a callback
 that will provide the value.
 
-Thunks produce **time-independent**
-wrappers around values.
-
-Thunks are the basis for Promises.
-
 ```javascript
 // asynchronous thunk
 function add(x, y, cb) {
@@ -91,17 +83,21 @@ thunk(function(sum) {
 });
 ```
 
+Thunks produce **time-independent**
+wrappers around values.
+
+Thunks are the basis for Promises.
+
 Additionally, thunks can be
 lazy or active.
 
-A lazy thunk is a thunk that
+- A lazy thunk is a thunk that
 computes its value the first
 time it is called, then
 returns it on all subsequent
 calls.
-
-An active thunk is a thunk that
-pcomputes its value when created
+- An active thunk is a thunk that
+computes its value when created
 and then returns it on all
 subsequent calls.
 
@@ -128,9 +124,10 @@ function add(cb) {
 add(function(sum) {
   sum; // 25
 });
+add(function(sum) {
+  sum; // 25 again
+});
 ```
-
-<a name="promises"></a>
 
 ### Promises
 Promises are wrappers around
@@ -163,11 +160,10 @@ error and are immutable once resolved.
 Meaning the code within a promise runs
 once. After resolving, the Promise
 becomes bound to the value with which
-it was resolved or rejected and is
-immutable.
+it resolved and is immutable.
 
 ```javascript
-var promise = new Promise((resolve, reject) => {
+let promise = new Promise((resolve, reject) => {
   resolve(1); // resolve once
   resolve(2); // resolve second time (this is ignored)
 });
@@ -180,7 +176,20 @@ promise.then((result) => {
 ```
 
 In other words, a Promise is a pattern
-for managing our callbacks in a trustable
+for managing our callbacks in a **trustable**
 fashion.
 
-Promises are chainable!
+Additionally, Promises are chainable!
+
+```javascript
+// both request happen concurrently ("in parallel")
+let license = getDriversLicense();
+let car = buyACar();
+
+license.then(function() {
+  return car;
+}).then(function(car) {
+  // here we know that we have a license and a car
+  car.drive();
+});
+```
