@@ -8,6 +8,19 @@
     cursor: pointer;
   }
 
+  button.code {
+  	background: transparent;
+  	border: none;
+  }
+
+  button.code:focus {
+    outline: none;
+  }
+
+  button.code:hover {
+  	opacity: .8;
+  }
+
   h3 {
     margin: 0;
   }

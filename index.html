@@ -196,9 +196,11 @@ const promise3 = getFile('file3');
 
 promise1.then(contents1 => {
   render('file1', contents1);
+}).then(() => {
   return promise2;
 }).then(contents2 => {
   render('file2', contents2);
+}).then(() => {
   return promise3;
 }).then(contents3 => {
   render('file3', contents3);
