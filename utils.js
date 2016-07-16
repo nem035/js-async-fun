@@ -38,6 +38,18 @@ function findChildByClass({ childNodes }, cls) {
     );
 }
 
+function toggleCode(card) {
+  const container = document.querySelector(`.card.${card} .code-container`);
+  const btnCaret = document.querySelector(`.card.${card} button.code span`);
+  if (!container.style.display || container.style.display === 'none') {
+    container.style.display = 'block';
+    btnCaret.innerHTML = '&#9660';
+  } else {
+    container.style.display = 'none';
+    btnCaret.innerHTML = '&#9650';
+  }
+}
+
 function render(card, file, text) {
   setTimeout(() => {
     log(`Rendered ${file}: ${text}`);

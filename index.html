@@ -1,90 +1,12 @@
 <html>
 <head>
-  <style>
-
-    body {
-      background: #e3e3e3;
-    }
-
-    button {
-    	padding: 5px 20px;
-    	cursor: pointer;
-    }
-
-    h3 {
-    	margin: 0;
-    }
-
-    .col {
-    	width: 50%;
-      float: left;
-    }
-
-    h4 {
-    	text-align: center;
-    }
-
-    .card {
-      background: white;
-      border-radius: 2px;
-      border: 1px solid #cccccc;
-      box-shadow: 1px 1px 1px 0px gray;
-      margin-bottom: 5px;
-      overflow: auto;
-      padding: 10px;
-    }
-
-    .item {
-      background-color: #eceff1;
-      border: 1px solid #e3e3e3;
-      font-family: monospace;
-      height: 30px;
-      margin: 10px;
-      transition: background-color .3s ease-in;
-      text-align: center;
-    }
-
-    .problem {
-	     font-size: 20px;
-     }
-
-    code {
-    	background: #e3e3e3;
-    	border: 1px solid #cfd8dc;
-    	font-family: monospace;
-    	font-size: 16px;
-    	padding: 1px 2px;
-    }
-
-    .timer .loader {
-    	background: #ffd180;
-    	height: 100%;
-    	text-align: center;
-    	transition-property: width;
-    	transition-timing-function: linear;
-    	width: 0%;
-    }
-
-    .timer .loader.animating {
-      width: 100%;
-    }
-
-    .timer .loader.finished {
-      background: transparent;
-    }
-
-    .timer.done {
-      background-color: #00e676;
-    }
-
-    .file.rendered {
-      background-color: #80d8ff;
-    }
-
-  </style>
+  <link rel="stylesheet" href="./highlight.css">
+  <link rel="stylesheet" href="./style.css">
+  <script src="./highlight.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
 </head>
 <body>
-  <h2>JavaScript Async Fun</h2>
+  <h2>JavaScript Async Fun - Flow Control</h2>
 
   <div class="card problem">
     <ul>
@@ -105,6 +27,9 @@
     <h3>
       Callbacks
       <button class="run" type="button" onclick="callbacks()">Run</button>
+      <button class="code" type="button" onclick="toggleCode('callbacks')">
+        Code <span>&#9650;</span>
+      </button>
     </h3>
     <div class="col">
       <h4>Render</h4>
@@ -124,12 +49,127 @@
         <div class="loader">file3</div>
       </div>
     </div>
+    <div class="code-container">
+      <pre><code>// map containing contents of each file
+const contents = {
+  file1: undefined,
+  file2: undefined,
+  file3: undefined
+};
+
+// map containing a flag indicating if file is rendered
+const renders = {
+  file1: false,
+  file2: false,
+  file3: false
+};
+
+['file1', 'file2', 'file3'].forEach(file => {
+  getFile(file);
+});
+
+const rendered = x => renders[x];
+const received = x => contents(x) !== undefined;
+
+function getFile(file) {
+  getFromServer(file, response => {
+
+    // store the current file response
+    contents[file] = response;
+
+    // go through all the files
+    // for each file, in order,
+    // if it wasn't received
+    // stop the loop
+    // otherwise continue looping
+    // and render unrendered files
+    files.every(file => {
+      if (received(file)) {
+        if (!rendered(file)) {
+          render(file, contents[file]);
+        }
+        return true;
+      } else {
+        return false;
+      }
+    });
+  });
+}</code></pre>
+    </div>
   </div>
 
   <div class="card thunks">
     <h3>
       Thunks
       <button class="run" type="button" onclick="thunks()">Run</button>
+      <button class="code" type="button" onclick="toggleCode('thunks')">
+        Code <span>&#9650;</span>
+      </button>
+    </h3>
+    <div class="col">
+      <h4>Render</h4>
+      <div class="item file1 file"></div>
+      <div class="item file2 file"></div>
+      <div class="item file3 file"></div>
+    </div>
+    <div class="col">
+      <h4>Received</h4>
+      <div class="item file1 timer received">
+        <div class="loader">file1</div>
+      </div>
+      <div class="item file2 timer received">
+        <div class="loader">file2</div>
+      </div>
+      <div class="item file3 timer received">
+        <div class="loader">file3</div>
+      </div>
+    </div>
+    <div class="code-container">
+      <pre><code>const thunkFile1 = getFile('file1');
+const thunkFile2 = getFile('file2');
+const thunkFile3 = getFile('file3');
+
+thunkFile1(contents1 => {
+  render('file1', contents1);
+  thunkFile2(contents2 => {
+    render('file2', contents2);
+    thunkFile3(contents3 => {
+      render('file3', contents3);
+    });
+  });
+});
+
+// A thunk maker that caches the
+// callback or the response,
+// depending on which is obtained
+// first and executes the callback
+// with the response, once both are
+// received
+function getFile(file) {
+  let contents;
+  let callback;
+  getFromServer(file, response => {
+    if (callback === undefined) {
+      contents = response;
+    } else {
+      callback(response);
+    }
+  });
+  return function(cb) {
+    if (contents === undefined) {
+      callback = cb;
+    } else {
+      cb(contents);
+    }
+  };
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="card promises">
+    <h3>
+      Promises
+      <button class="run" type="button" onclick="promises()">Run</button>
     </h3>
     <div class="col">
       <h4>Render</h4>
@@ -154,5 +194,6 @@
   <script src="./utils.js"></script>
   <script src="./callbacks.js"></script>
   <script src="./thunks.js"></script>
+  <script src="./promises.js"></script>
 </body>
 </html>

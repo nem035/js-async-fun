@@ -1,0 +1,94 @@
+
+  body {
+    background: #e3e3e3;
+  }
+
+  button {
+    padding: 5px 20px;
+    cursor: pointer;
+  }
+
+  h3 {
+    margin: 0;
+  }
+
+  .col {
+    width: 50%;
+    float: left;
+  }
+
+  h4 {
+    text-align: center;
+  }
+
+  .card {
+    background: white;
+    border-radius: 2px;
+    border: 1px solid #cccccc;
+    box-shadow: 1px 1px 1px 0 gray;
+    margin-bottom: 5px;
+    overflow: auto;
+    padding: 10px;
+  }
+
+  .item {
+    background-color: #eceff1;
+    font-family: monospace;
+    height: 30px;
+    margin: 10px;
+    transition: background-color .3s ease-in;
+    text-align: center;
+  }
+
+  .problem {
+     font-size: 20px;
+   }
+
+  code {
+    background: #e3e3e3;
+    border: 1px solid #cfd8dc;
+    font-family: monospace;
+    font-size: 16px;
+    padding: 1px 2px;
+  }
+
+  pre code {
+    border: 0;
+	  font-size: 13px;
+  }
+
+  .code-container {
+    border: 1px solid #e3e3e3;
+    display: none;
+    float: left;
+    width: 100%;
+  }
+
+  .code-container.visible {
+    display: block;
+  }
+
+  .timer .loader {
+    background: #ffd180;
+    height: 100%;
+    text-align: center;
+    transition-property: width;
+    transition-timing-function: linear;
+    width: 0;
+  }
+
+  .timer .loader.animating {
+    width: 100%;
+  }
+
+  .timer .loader.finished {
+    background: transparent;
+  }
+
+  .timer.done {
+    background-color: #00e676;
+  }
+
+  .file.rendered {
+    background-color: #80d8ff;
+  }
