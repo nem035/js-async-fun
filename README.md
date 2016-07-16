@@ -3,8 +3,12 @@ Fun with Asynchronous JavaScript using various patterns to solve the
 following problem
 
 > Request `file1`, `file2` and `file3` **at the same time** (in "parallel")
+
 > **Render them ASAP** (don't just blindly wait for all to finish loading)
+
 > **Render them in proper (obvious) order**: `file1`, `file2`, `file3`.
+
+## [Code Samples & Tests](https://nem035.github.io/js-async-fun/)
 
 ## Patterns
 
