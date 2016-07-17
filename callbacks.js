@@ -25,7 +25,7 @@ function callbacks() {
   });
 
   function getFile(file) {
-    fakeAjax('callbacks', file, function(response) {
+    fakeAjaxCallback(file, function(response) {
 
       // store the current file response
       contents[file] = response;

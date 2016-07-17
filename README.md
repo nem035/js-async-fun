@@ -8,6 +8,8 @@ following problem
 
 > **Render them in proper (obvious) order**: `file1`, `file2`, `file3`.
 
+> Output the string ``"Complete!"`` after all files are rendered.
+
 ## [Code Samples & Tests](https://nem035.github.io/js-async-fun/)
 
 ## Patterns

@@ -26,7 +26,7 @@ function thunks() {
   function getFile(file) {
     let contents;
     let callback;
-    fakeAjax('thunks', file, (response) => {
+    fakeAjaxThunk(file, (response) => {
       if (callback === undefined) {
         contents = response;
       } else {

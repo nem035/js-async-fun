@@ -7,10 +7,10 @@ function fakeAjax(card, file, cb) {
     file3: 'file3'
   };
 
-  const randomDelay = (Math.round(Math.random() * 1E4) % 8000) + 1000;
+  const randomDelay = (Math.round(Math.random() * 1E4) % 5000) + 2000;
   load(card, file, randomDelay);
   console.info();
-  setTimeout(function() {
+  setTimeout(() => {
     receive(card, file);
     cb(fakeResponses[file]);
   }, randomDelay);
@@ -35,13 +35,13 @@ function findChildByClass({ childNodes }, cls) {
 }
 
 function toggleCode(card) {
-  const container = document.querySelector(`.card.${card} .code-container`);
+  const { style: code } = document.querySelector(`.card.${card} .code-container`);
   const btnCaret = document.querySelector(`.card.${card} button.code span`);
-  if (!container.style.display || container.style.display === 'none') {
-    container.style.display = 'block';
+  if (!code.display || code.display === 'none') {
+    code.display = 'block';
     btnCaret.innerHTML = '&#9660';
   } else {
-    container.style.display = 'none';
+    code.display = 'none';
     btnCaret.innerHTML = '&#9650';
   }
 }
@@ -55,15 +55,27 @@ function render(card, file, text) {
   }, renderDelay);
 }
 
-function makeRenderer(type) {
+function rendererFactory(type) {
   return function(file, contents) {
     render(type, file, contents);
   };
 }
 
-const renderCallback = makeRenderer('callbacks');
-const renderThunk = makeRenderer('thunks');
-const renderPromise = makeRenderer('promises');
+const renderCallback = rendererFactory('callbacks');
+const renderThunk = rendererFactory('thunks');
+const renderPromise = rendererFactory('promises');
+const renderPromiseArray = rendererFactory('promisesArray');
+
+function fakeAjaxFactory(type) {
+  return function(file, contents) {
+    fakeAjax(type, file, contents);
+  };
+}
+
+const fakeAjaxCallback = fakeAjaxFactory('callbacks');
+const fakeAjaxThunk = fakeAjaxFactory('thunks');
+const fakeAjaxPromise = fakeAjaxFactory('promises');
+const fakeAjaxPromiseArray = fakeAjaxFactory('promisesArray');
 
 function receive(card, file) {
   log(`Received ${file}`);
@@ -109,7 +121,7 @@ function initLogs(card) {
 }
 
 function start(card) {
-  console.log(`------ ${card} ------`);
+  log(`------ ${card} ------`);
   document.querySelector(`.card.${card} button.run`).disabled = true;
   initRenders(card);
   initLogs(card);
@@ -118,5 +130,6 @@ function start(card) {
 function finish(card) {
   setTimeout(() => {
     document.querySelector(`.card.${card} button.run`).disabled = false;
+    log('Complete!');
   }, renderDelay);
 }

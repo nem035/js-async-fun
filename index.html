@@ -18,8 +18,9 @@
         <strong>Render them ASAP</strong> (don't just blindly wait for all to finish loading)
       </li>
       <li>
-        BUT, <strong>render them in proper (obvious) order</strong>: <code>file1</code>, <code>file2</code>, <code>file3</code>.
+        <strong>Render them in proper (obvious) order</strong>: <code>file1</code>, <code>file2</code>, <code>file3</code>.
       </li>
+      <li>Output the string <code>"Complete!"</code> after all files are rendered.
     </ul>
   </div>
 
@@ -83,7 +84,11 @@ function getFile(file) {
     ['file1', 'file2', 'file3'].every(file => {
       if (contents[file]) {
         if (!rendered[file]) {
-          render(file, contents[file]);
+          render(contents[file]);
+          rendered[file] = true;
+          if (allRendered()) {
+            console.log('Complete!');
+          }
         }
         return true;
       } else {
@@ -91,6 +96,14 @@ function getFile(file) {
       }
     });
   });
+}
+
+function allRendered() {
+  return ['file1', 'file2', 'file3'].every(file => rendered[file];
+}
+
+function render(contents) {
+  // render contents to DOM
 }</code></pre>
     </div>
   </div>
@@ -127,11 +140,12 @@ const thunk2 = getFile('file2');
 const thunk3 = getFile('file3');
 
 thunk1(contents1 => {
-  render('file1', contents1);
+  render(contents1);
   thunk2(contents2 => {
-    render('file2', contents2);
+    render(contents2);
     thunk3(contents3 => {
-      render('file3', contents3);
+      render(contents3);
+      console.log('Complete!')
     });
   });
 });
@@ -159,6 +173,10 @@ function getFile(file) {
       cb(contents);
     }
   };
+}
+
+function render(contents) {
+  // render contents to DOM
 }</code></pre>
     </div>
   </div>
@@ -194,23 +212,80 @@ function getFile(file) {
 const promise2 = getFile('file2');
 const promise3 = getFile('file3');
 
-promise1.then(contents1 => {
-  render('file1', contents1);
-}).then(() => {
+promise1
+.then(render)
+.then(() => {
   return promise2;
-}).then(contents2 => {
-  render('file2', contents2);
-}).then(() => {
+})
+.then(render)
+.then(() => {
   return promise3;
-}).then(contents3 => {
-  render('file3', contents3);
+})
+.then(render)
+.then(() => {
+  console.log('Complete!');
 });
 
 // A promise maker
 function getFile(file) {
   return new Promise(resolve => {
-    fakeAjax('promises', file, resolve);
+    getFromServer(file, resolve);
   });
+}
+
+function render(contents) {
+  // render contents to DOM
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="card promisesArray">
+    <h3>
+      Promises Array
+      <button class="run" type="button" onclick="promisesArray()">Run</button>
+      <button class="code" type="button" onclick="toggleCode('promisesArray')">
+        Code <span>&#9650;</span>
+      </button>
+    </h3>
+    <div class="col">
+      <h4>Render</h4>
+      <div class="item file1 file"></div>
+      <div class="item file2 file"></div>
+      <div class="item file3 file"></div>
+    </div>
+    <div class="col">
+      <h4>Received</h4>
+      <div class="item file1 timer received">
+        <div class="loader">file1</div>
+      </div>
+      <div class="item file2 timer received">
+        <div class="loader">file2</div>
+      </div>
+      <div class="item file3 timer received">
+        <div class="loader">file3</div>
+      </div>
+    </div>
+    <div class="code-container">
+      <pre><code>['file1', 'file2', 'file3']
+.map(getFile)                 // convert each file to a promise (and make concurrent request for the contents)
+.reduce((chain, promise) => { // reduce all file promises to a single promise, while rendering each file in order
+  return chain.then(() => {
+    return promise;
+  }).then(render);
+}, Promise.resolve())
+.then(() => {
+  console.log('Complete!');
+});
+
+// A promise maker
+function getFile(file) {
+  return new Promise(resolve => {
+    getFromServer(file, resolve);
+  });
+}
+
+function render(contents) {
+  // render contents to DOM
 }</code></pre>
     </div>
   </div>
