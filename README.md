@@ -43,7 +43,7 @@ setTimeout(function() {
 
 This introduces trust issues with the other party executing our callback. We have to trust that they will call it in the exact way we need them to and exactly as many times as we need them to but we have no guarantees on how the code actually gets called and if it gets called at all.
 
-If we are executing multiple asynchronous code blocks, each with their own callback, the callbacks themselves do not provide us with a mechanism to "react" to their results in a sequential manner, other than nesting them within one another which would defy the purpose of parallel (concurrent) asynchronous code since each async block would wait on previous before running.
+If we are executing multiple asynchronous code blocks, each with their own callback, the callbacks themselves do not provide us with a mechanism to "react" to their results in a sequential manner, other than nesting them within one another which would defy the purpose of concurrent ("parallel") asynchronous code since each async block would wait on the previous before running.
 
 ```javascript
 getThingOneAsynchronously(function(value1) {
@@ -57,6 +57,48 @@ getThingTwoAsynchronously(function(value2) {
 // What about code that needs both `value1` and `value2`?
 ```
 
+The way we would have to deal with this is to introduce some outside control that will be shared among callbacks.
+
+```javascript
+// a map indicating if values are received
+let received = {
+  value1: false,
+  value2: false
+};
+
+// a map holding the data for each value
+let data = {
+  value1: undefined,
+  value2: undefined
+};
+
+// concurrent ("parallel") requests
+getData(30, function(value1) {
+  received.value1 = true;
+  data.value1 = value1;
+
+  // if value 2 was already received, show the result
+  if (received.value2) {
+    console.log(`The meaning of life is ${data.value1 + data.value2}`);
+  }
+});
+getData(10, function(value2) {
+  received.value2 = true;
+  data.value2 = value2;
+
+  // if value 1 was already received, show the result
+  if (received.value1) {
+    console.log(`The meaning of life is ${data.value1 + data.value2}`);
+  }
+});
+
+// callback wrapper
+function getData(d, cb) {
+  setTimeout(function() {
+    cb(1 + d);
+  }, 1000);
+}
+```
 [Problem](https://github.com/nem035/js-async-fun#problem) [Solution using callbacks](https://nem035.github.io/js-async-fun/#callbacks)
 
 ### Thunks
@@ -79,7 +121,7 @@ function thunk() {
   return add(10, 15);
 }
 
-thunk(); // 25
+console.log(thunk()); // 25
 ```
 
 An asynchronous thunk is the same as a synchronous thunk except instead of returning a value, it accepts a callback that will provide the value.
@@ -97,7 +139,7 @@ function thunk(cb) {
 }
 
 thunk(function(sum) {
-  sum; // 25
+  console.log(sum); // 25
 });
 ```
 
@@ -126,14 +168,14 @@ function asyncThunk(d) {
   let fn;
   getData(d, function(res) {
     if (fn) {
-      fn(1 + res);
+      fn(res);
     } else {
       data = res;
     }
   });
   return function(cb) {
     if (data) {
-      cb(1 + data);
+      cb(data);
     } else {
       fn = cb;
     }
@@ -143,7 +185,7 @@ function asyncThunk(d) {
 // callback wrapper
 function getData(d, cb) {
   setTimeout(function() {
-    cb(d);
+    cb(1 + d);
   }, 1000);
 }
 ```
@@ -184,10 +226,10 @@ let promise = new Promise(function(resolve, reject) {
   resolve(2); // resolve second time (this is ignored)
 });
 promise.then(function(result) {
-  result; // 1
+  console.log(result); // 1
 });
 promise.then(function(result) {
-  result; // still 1
+  console.log(result); // still 1
 });
 ```
 
@@ -201,21 +243,22 @@ which is easier to reason about and requires no nesting.
 let promise1 = getData(30);
 let promise2 = getData(10);
 
-let result = 0;
+let value1;
+let value2;
 
 // promise chain that accumulates our results and prints them once both are received
 promise1
-.then(function(value1) {
-  result += value1;
+.then(function(res1) {
+  value1 = res1;
 })
 .then(function() {
   return promise2;
 })
-.then(function(value2) {
-  result += value2;
+.then(function(res2) {
+  value2 = res2;
 })
 .then(function() {
-  console.log(`The meaning of life is ${result}`);
+  console.log(`The meaning of life is ${value1 + value2}`);
 });
 
 // promise wrapper
@@ -254,14 +297,24 @@ function getData(d) {
 What about a promise that never resolves? Well, the way to deal with this is similar to how we would deal with any async code that might never run, which is to setup a timer. A convenient method we can use for this is [Promise.race](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race), which takes an array of promises and resolves as soon as any of them resolve (or reject).
 
 ```javascript
-let p = trySomeAsyncThingThatMightNeverFinish();
+// promise that never resolves
+let promise = new Promise(function() {
+
+});
+
+// timed promise that rejects after 3 seconds
 let timer = new Promise(function(_, reject) {
   setTimeout(function() {
     reject('Timeout!');
-  });
+  }, 3000);
 });
 
-Promise.race([ p, timer ]).then( success, fail );
+function success() {}
+function fail(err) {
+  console.error(err);
+}
+
+Promise.race([ promise, timer ]).then( success, fail );
 ```
 [Problem](https://github.com/nem035/js-async-fun#problem) [Solution using promises](https://nem035.github.io/js-async-fun/#promises)
 
@@ -346,7 +399,7 @@ In the same way thunks & promises factor out time as a concern, generators facto
 run(gen());
 
 function *gen() {
-  // make "parallel" request for data through the promises
+  // concurrent ("parallel") requests
   const p1 = getData(30);
   const p2 = getData(10);
 
