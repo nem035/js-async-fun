@@ -32,7 +32,7 @@ later
 
 ```javascript
 // first half
-later(() => {
+setTimeout(function() {
   // second half
   // we are not in control if/when this gets executed
 });
@@ -79,7 +79,9 @@ that will provide the value.
 ```javascript
 // asynchronous thunk
 function add(x, y, cb) {
-  cb(x + y);
+  setTimeout(function() {
+    cb(x + y);
+  }, 1000);
 }
 function thunk(cb) {
   return add(10, 15, cb);
@@ -90,9 +92,8 @@ thunk(function(sum) {
 ```
 
 Thunks produce **time-independent**
-wrappers around values.
-
-Thunks are the basis for promises.
+wrappers around values and are the
+basis for promises.
 
 Additionally, thunks can be
 lazy or active.
@@ -111,7 +112,7 @@ subsequent calls.
 // asynchronous active thunk
 function add(cb) {
   let x, y, fn;
-  setTimeout((a, b) => {
+  setTimeout(function(a, b) {
     if (!fn) {
       x = 10;
       y = 15;
@@ -169,14 +170,14 @@ becomes bound to the value with which
 it resolved and is immutable.
 
 ```javascript
-let promise = new Promise((resolve, reject) => {
+let promise = new Promise(function(resolve, reject) {
   resolve(1); // resolve once
   resolve(2); // resolve second time (this is ignored)
 });
-promise.then((result) => {
+promise.then(function(result) {
   result; // 1
 });
-promise.then((result) => {
+promise.then(function(result) {
   result; // still 1
 });
 ```
@@ -189,14 +190,22 @@ Additionally, promises are chainable!
 
 ```javascript
 // both request happen concurrently ("in parallel")
-let license = getDriversLicense();
-let car = buyACar();
+let thing1 = getThingOneAsynchronously();
+let thing2 = getThingTwoAsynchronously();
 
-license.then(function() {
-  return car;
-}).then(function(car) {
-  // here we know that we have a license and a car
-  car.drive();
+thing1
+.then(function(value1) {
+  console.log('first: ' + value1);
+})
+.then(function() {
+  return thing2;
+})
+.then(function(value2) {
+  console.log('second: ' + value2);
+})
+.then(function() {
+  // both thing1 and thing2 are finished here
+  console.log('done');
 });
 ```
 
@@ -211,14 +220,13 @@ as any of them resolve (or reject).
 
 ```javascript
 let p = trySomeAsyncThingThatMightNeverFinish();
-let timer = new Promise((_, reject) => {
-  setTimeout(() => {
+let timer = new Promise(function(_, reject) {
+  setTimeout(function() {
     reject('Timeout!');
   });
 });
 
-Promise.race([ p, timer ])
-  .then( success, fail );
+Promise.race([ p, timer ]).then( success, fail );
 ```
 
 ### Generators
@@ -237,8 +245,8 @@ semantic.
 In other words, generators allow us
 to syntactically declare state machines.
 Simply put, generators are functions that
-can be paused and resumed where the pausing
-**blocks code locally in the generator**,
+can be paused and resumed where the **pausing
+blocks code locally in the generator**,
 leaving all other code unaffected.
 
 A generator function returns an iterator,
@@ -335,7 +343,7 @@ iter.next().value.then(function(val1) {
 });
 
 function getData(d) {
-  return new Promise((resolve) => {
+  return new Promise(function(resolve) {
     setTimeout(function() {
       resolve(d);
     }, 1000);
