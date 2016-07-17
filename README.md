@@ -110,37 +110,43 @@ Additionally, thunks can be lazy or active.
 - An active thunk is a thunk that computes its value when created and then returns it on all subsequent calls.
 
 ```javascript
+// concurrent ("parallel") requests
+let thunk1 = asyncThunk(30);
+let thunk2 = asyncThunk(10);
+
+// sequential (nested) thunks
+thunk1(function(value1) {
+  thunk2(function(value2) {
+    console.log(`The meaning of life is ${value1 + value2}`);    
+  });
+});
+
 // asynchronous active thunk
-function add(cb) {
-  let x, y, fn;
-
-  // async code that
-  // - calls the callback with the results if the results were already requested, or
-  // - caches its results in the closure variables
-  setTimeout(function(a, b) {
+function asyncThunk(d) {
+  let data;
+  let fn;
+  getData(d, function(res) {
     if (fn) {
-      fn(a + b);
+      fn(1 + res);
     } else {
-      x = 10;
-      y = 15;
+      data = res;
     }
-  }, 3000);
-
-  // function that
-  // calls the callback if the results were already received, or
-  // caches the callback in the closure variable
+  });
   return function(cb) {
-    if (x && y) {
-      cb(x + y);
+    if (data) {
+      cb(1 + data);
     } else {
       fn = cb;
     }
   }
 }
 
-add(function(sum) {
-  sum; // 25
-});
+// callback wrapper
+function getData(d, cb) {
+  setTimeout(function() {
+    cb(d);
+  }, 1000);
+}
 ```
 
 [Problem](https://github.com/nem035/js-async-fun#problem) [Solution using thunks](https://nem035.github.io/js-async-fun/#thunks)
@@ -192,24 +198,58 @@ Additionally, promises are chainable, providing cleaner, sequential looking asyn
 which is easier to reason about and requires no nesting.
 
 ```javascript
-// both request happen concurrently ("in parallel")
-let thing1 = getThingOneAsynchronously();
-let thing2 = getThingTwoAsynchronously();
+// concurrent ("parallel") requests
+let promise1 = getData(30);
+let promise2 = getData(10);
 
-thing1
+let result = 0;
+
+// promise chain that accumulates our results and prints them once both are received
+promise1
 .then(function(value1) {
-  console.log('first: ' + value1);
+  result += value1;
 })
 .then(function() {
-  return thing2;
+  return promise2;
 })
 .then(function(value2) {
-  console.log('second: ' + value2);
+  result += value2;
 })
 .then(function() {
-  // both thing1 and thing2 are finished here
-  console.log('done');
+  console.log(`The meaning of life is ${result}`);
 });
+
+// promise wrapper
+function getData(d) {
+  return new Promise(function(resolve) {
+    setTimeout(function() {
+      resolve(1 + d);
+    }, 1000);
+  });
+}
+```
+
+Additionally, we can use [Promise.all](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all) to wait until all of our data is received, and then perform a certain operation.
+
+```javascript
+// concurrent ("parallel") requests
+let promise1 = getData(30);
+let promise2 = getData(10);
+
+// print the result once both values are received
+Promise.all([ promise1, promise2 ])
+.then(function(values) {
+  console.log(`The meaning of life is ${values[0] + values[1]}`);  
+});
+
+// promise wrapper
+function getData(d) {
+  return new Promise(function(resolve) {
+    setTimeout(function() {
+      resolve(1 + d);
+    }, 1000);
+  });
+}
 ```
 
 What about a promise that never resolves? Well, the way to deal with this is similar to how we would deal with any async code that might never run, which is to setup a timer. A convenient method we can use for this is [Promise.race](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race), which takes an array of promises and resolves as soon as any of them resolve (or reject).
@@ -282,9 +322,9 @@ Generators enable us to write synchronous looking asynchronous code.
 
 ```javascript
 function *gen() {
-  const a = 1 + (yield getData(30));
-  const b = 1 + (yield getData(10));    
-  console.log(`The meaning of life is ${a + b}`);
+  const value1 = yield getData(30);
+  const value2 = yield getData(10);    
+  console.log(`The meaning of life is ${value1 + value2}`);
 }
 
 let iter = gen();
@@ -292,7 +332,7 @@ iter.next();
 
 function getData(d) {
   setTimeout(function() {
-    iter.next(d);
+    iter.next(1 + d);
   }, 1000);
 }
 ```
@@ -304,31 +344,38 @@ The way to regain control back is to combine generators with promises.
 In the same way thunks & promises factor out time as a concern, generators factor out asynchronicity itself as an issue. By combining generators and promises, we can combine the reliable nature of promises with the sequential nature of generators to achieve safe, trustable, asynchronous code.
 
 ```javascript
+run(gen());
+
 function *gen() {
   // make "parallel" request for data through the promises
   const p1 = getData(30);
   const p2 = getData(10);
 
   // obtain results from our async request by yielding promises
-  const a = 1 + (yield p1);
-  const b = 1 + (yield p2);   
+  const value1 = yield p1;
+  const value2 = yield p2;   
 
   // finish
-  yield(`The meaning of life is ${a + b}`);
+  yield(value1 + value2);
 }
 
-// run promises in order
-let iter = gen();
-iter.next().value.then(function(val1) {
-  iter.next(val1).value.then(function(val2) {
-    console.log(iter.next(val2).value);        
-  });
-});
+// run promises in order (recursively)
+function run(iter, prev) {
+  let result = iter.next(prev).value;
+  if (typeof result === 'number') {
+    console.log(`The meaning of life is ${result}`);
+  } else if (result) {
+    result.then(function(file) {
+      run(iter, file);
+    });
+  }
+}
 
+// promise wrapper
 function getData(d) {
   return new Promise(function(resolve) {
     setTimeout(function() {
-      resolve(d);
+      resolve(1 + d);
     }, 1000);
   });
 }

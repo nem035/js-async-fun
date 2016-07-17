@@ -1,7 +1,7 @@
 function generators() {
   start('generators');
 
-  runner(generator());
+  run(generator());
 
   // A generator
   function* generator() {
@@ -20,11 +20,11 @@ function generators() {
   }
 
   // A generator runner
-  function runner(iter, prev) {
+  function run(iter, prev) {
     let promise = iter.next(prev).value;
     if (promise) {
       promise.then(file => {
-        runner(iter, file);
+        run(iter, file);
       });
     }
   }
