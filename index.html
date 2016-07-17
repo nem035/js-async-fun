@@ -29,7 +29,7 @@
 
   <div class="card callbacks">
     <h3>
-      Callbacks Solution
+      <a href="https://github.com/nem035/js-async-fun#callbacks-hell">Callbacks</a> Solution
       <button class="run" type="button" onclick="callbacks()">Run</button>
       <button class="code" type="button" onclick="toggleCode('callbacks')">
         Code <span>&#9650;</span>
@@ -68,12 +68,13 @@ const rendered = {
   file3: false
 };
 
+// parallel requests
 getFile('file1');
 getFile('file2');
 getFile('file3');
 
 function getFile(file) {
-  getFromServer(file, response => {
+  getFromServer(file, function (response) {
 
     // store the current file response
     contents[file] = response;
@@ -84,7 +85,7 @@ function getFile(file) {
     // stop the loop
     // otherwise continue looping
     // and render unrendered files
-    ['file1', 'file2', 'file3'].every(file => {
+    ['file1', 'file2', 'file3'].every(function(file) {
       if (contents[file]) {
         if (!rendered[file]) {
           render(contents[file]);
@@ -102,7 +103,10 @@ function getFile(file) {
 }
 
 function allRendered() {
-  return ['file1', 'file2', 'file3'].every(file => rendered[file];
+  return ['file1', 'file2', 'file3']
+    .every(function(file) {
+      return rendered[file];
+    }
 }
 
 function render(contents) {
@@ -113,7 +117,7 @@ function render(contents) {
 
   <div class="card thunks">
     <h3>
-      Thunks Solution
+      <a href="https://github.com/nem035/js-async-fun#thunks">Thunks</a> Solution
       <button class="run" type="button" onclick="thunks()">Run</button>
       <button class="code" type="button" onclick="toggleCode('thunks')">
         Code <span>&#9650;</span>
@@ -138,15 +142,17 @@ function render(contents) {
       </div>
     </div>
     <div class="code-container">
-      <pre><code>const thunk1 = getFile('file1');
+      <pre><code>// parallel requests
+const thunk1 = getFile('file1');
 const thunk2 = getFile('file2');
 const thunk3 = getFile('file3');
 
-thunk1(contents1 => {
+// sequential rendering
+thunk1(function(contents1) {
   render(contents1);
-  thunk2(contents2 => {
+  thunk2(function(contents2) {
     render(contents2);
-    thunk3(contents3 => {
+    thunk3(function(contents3) {
       render(contents3);
       console.log('Complete!')
     });
@@ -162,7 +168,7 @@ thunk1(contents1 => {
 function getFile(file) {
   let contents;
   let callback;
-  getFromServer(file, response => {
+  getFromServer(file, function(response) {
     if (callback === undefined) {
       contents = response;
     } else {
@@ -186,7 +192,7 @@ function render(contents) {
 
   <div class="card promises">
     <h3>
-      Promises Solution
+      <a href="https://github.com/nem035/js-async-fun#promises">Promises</a> Solution
       <button class="run" type="button" onclick="promises()">Run</button>
       <button class="code" type="button" onclick="toggleCode('promises')">
         Code <span>&#9650;</span>
@@ -211,27 +217,29 @@ function render(contents) {
       </div>
     </div>
     <div class="code-container">
-      <pre><code>const promise1 = getFile('file1');
+      <pre><code>// parallel requests
+const promise1 = getFile('file1');
 const promise2 = getFile('file2');
 const promise3 = getFile('file3');
 
+// sequential (chain) rendering
 promise1
 .then(render)
-.then(() => {
+.then(function() {
   return promise2;
 })
 .then(render)
-.then(() => {
+.then(function() {
   return promise3;
 })
 .then(render)
-.then(() => {
+.then(function() {
   console.log('Complete!');
 });
 
 // A promise maker
 function getFile(file) {
-  return new Promise(resolve => {
+  return new Promise(function(resolve) {
     getFromServer(file, resolve);
   });
 }
@@ -244,7 +252,7 @@ function render(contents) {
 
   <div class="card promisesArray">
     <h3>
-      Promises Array Solution
+      <a href="https://github.com/nem035/js-async-fun#promises">Promises</a> Array Solution
       <button class="run" type="button" onclick="promisesArray()">Run</button>
       <button class="code" type="button" onclick="toggleCode('promisesArray')">
         Code <span>&#9650;</span>
@@ -269,20 +277,23 @@ function render(contents) {
       </div>
     </div>
     <div class="code-container">
-      <pre><code>['file1', 'file2', 'file3']
-.map(getFile)                 // convert each file to a promise (and make concurrent request for the contents)
-.reduce((chain, promise) => { // reduce all file promises to a single promise, while rendering each file in order
-  return chain.then(() => {
-    return promise;
-  }).then(render);
+      <pre><code> // create an array of promises (and make parallel request for the contents)
+let promises = ['file1', 'file2', 'file3'].map(getFile);
+
+// reduce all file promises to a single promise, while rendering each file in order
+promises.reduce(function(chain, promise) {
+  return chain
+    .then(function() {
+      return promise;
+    }).then(render);
 }, Promise.resolve())
-.then(() => {
+.then(function() {
   console.log('Complete!');
 });
 
 // A promise maker
 function getFile(file) {
-  return new Promise(resolve => {
+  return new Promise(function(resolve) {
     getFromServer(file, resolve);
   });
 }
@@ -295,7 +306,7 @@ function render(contents) {
 
   <div class="card generators">
     <h3>
-      Generators & Promises Solution
+      <a href="https://github.com/nem035/js-async-fun#generators">Generators</a> & <a href="https://github.com/nem035/js-async-fun#promises">Promises</a> Solution
       <button class="run" type="button" onclick="generators()">Run</button>
       <button class="code" type="button" onclick="toggleCode('generators')">
         Code <span>&#9650;</span>
@@ -338,11 +349,11 @@ function* gen() {
   console.log('Complete!');
 }
 
-// A generator runner
+// A (recursive) generator runner
 function runner(iter, prev) {
   let promise = iter.next(prev).value;
   if (promise) {
-    promise.then(file => {
+    promise.then(function(file) {
       runner(iter, file);
     });
   }
@@ -350,7 +361,7 @@ function runner(iter, prev) {
 
 // A promise maker
 function getFile(file) {
-  return new Promise(resolve => {
+  return new Promise(function(resolve) {
     getFromServer(file, resolve);
   });
 }
