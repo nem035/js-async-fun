@@ -80,7 +80,6 @@ function thunk() {
 }
 
 thunk(); // 25
-thunk(); // 25
 ```
 
 An asynchronous thunk is the same as a synchronous thunk except instead of returning a value, it accepts a callback that will provide the value.

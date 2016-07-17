@@ -1,10 +1,10 @@
 function generators() {
   start('generators');
 
-  run(generator());
+  run(gen());
 
   // A generator
-  function* generator() {
+  function* gen() {
 
     // parallel requests
     const promise1 = getFile('file1');

@@ -68,7 +68,7 @@ const rendered = {
   file3: false
 };
 
-// parallel requests
+// concurrent ("parallel") requests
 getFile('file1');
 getFile('file2');
 getFile('file3');
@@ -142,7 +142,7 @@ function render(contents) {
       </div>
     </div>
     <div class="code-container">
-      <pre><code>// parallel requests
+      <pre><code>// concurrent ("parallel") requests
 const thunk1 = getFile('file1');
 const thunk2 = getFile('file2');
 const thunk3 = getFile('file3');
@@ -217,7 +217,7 @@ function render(contents) {
       </div>
     </div>
     <div class="code-container">
-      <pre><code>// parallel requests
+      <pre><code>// concurrent ("parallel") requests
 const promise1 = getFile('file1');
 const promise2 = getFile('file2');
 const promise3 = getFile('file3');
@@ -282,7 +282,7 @@ function render(contents) {
 // A generator
 function* gen() {
 
-  // parallel requests
+  // concurrent ("parallel") requests
   const promise1 = getFile('file1');
   const promise2 = getFile('file2');
   const promise3 = getFile('file3');
