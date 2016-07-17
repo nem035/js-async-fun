@@ -297,17 +297,27 @@ function getData(d) {
 }
 ```
 
-The same way thunks & promises factor out time as a concern, generators factor out asynchronicity itself as an issue. By combining generators and promises, we can combine the reliable nature of  promises with the sequential nature of generators to achieve safe, trustable, asynchronous code.
+However, the code above still has the issue of Inversion of Control that requires some outside party (in this case `setTimeout`) to call our generator's `next` method.
+
+The way to regain control back is to combine generators with promises.
+
+In the same way thunks & promises factor out time as a concern, generators factor out asynchronicity itself as an issue. By combining generators and promises, we can combine the reliable nature of promises with the sequential nature of generators to achieve safe, trustable, asynchronous code.
 
 ```javascript
 function *gen() {
+  // make "parallel" request for data through the promises
   const p1 = getData(30);
   const p2 = getData(10);
+
+  // obtain results from our async request by yielding promises
   const a = 1 + (yield p1);
-  const b = 1 + (yield p2);    
+  const b = 1 + (yield p2);   
+
+  // finish
   yield(`The meaning of life is ${a + b}`);
 }
 
+// run promises in order
 let iter = gen();
 iter.next().value.then(function(val1) {
   iter.next(val1).value.then(function(val2) {
