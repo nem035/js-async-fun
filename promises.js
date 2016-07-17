@@ -27,26 +27,3 @@ function promises() {
     });
   }
 }
-
-function promisesArray() {
-  start('promisesArray');
-
-  [ 'file1', 'file2', 'file3' ]
-    .map(getFile)
-    .reduce((chain, promise, idx) => {
-      return chain.then(() => {
-        return promise;
-      }).then((contents) => {
-        renderPromiseArray(`file${idx + 1}`, contents);
-      });
-    }, Promise.resolve()).then(() => {
-      finish('promisesArray');
-    });
-
-  // A promise maker
-  function getFile(file) {
-    return new Promise(resolve => {
-      fakeAjaxPromiseArray(file, resolve);
-    });
-  }
-}

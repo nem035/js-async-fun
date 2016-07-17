@@ -64,7 +64,6 @@ function rendererFactory(type) {
 const renderCallback = rendererFactory('callbacks');
 const renderThunk = rendererFactory('thunks');
 const renderPromise = rendererFactory('promises');
-const renderPromiseArray = rendererFactory('promisesArray');
 const renderGenerator = rendererFactory('generators');
 
 function fakeAjaxFactory(type) {
@@ -76,7 +75,6 @@ function fakeAjaxFactory(type) {
 const fakeAjaxCallback = fakeAjaxFactory('callbacks');
 const fakeAjaxThunk = fakeAjaxFactory('thunks');
 const fakeAjaxPromise = fakeAjaxFactory('promises');
-const fakeAjaxPromiseArray = fakeAjaxFactory('promisesArray');
 const fakeAjaxGenerator = fakeAjaxFactory('generators');
 
 function receive(card, file) {

@@ -29,7 +29,7 @@
 
   <div class="card callbacks">
     <h3>
-      <a href="https://github.com/nem035/js-async-fun#callbacks-hell">Callbacks</a> Solution
+      <a id="callbacks" href="https://github.com/nem035/js-async-fun#callbacks-hell">Callbacks</a> Solution
       <button class="run" type="button" onclick="callbacks()">Run</button>
       <button class="code" type="button" onclick="toggleCode('callbacks')">
         Code <span>&#9650;</span>
@@ -117,7 +117,7 @@ function render(contents) {
 
   <div class="card thunks">
     <h3>
-      <a href="https://github.com/nem035/js-async-fun#thunks">Thunks</a> Solution
+      <a id="thunks" href="https://github.com/nem035/js-async-fun#thunks">Thunks</a> Solution
       <button class="run" type="button" onclick="thunks()">Run</button>
       <button class="code" type="button" onclick="toggleCode('thunks')">
         Code <span>&#9650;</span>
@@ -192,7 +192,7 @@ function render(contents) {
 
   <div class="card promises">
     <h3>
-      <a href="https://github.com/nem035/js-async-fun#promises">Promises</a> Solution
+      <a id="promises" href="https://github.com/nem035/js-async-fun#promises">Promises</a> Solution
       <button class="run" type="button" onclick="promises()">Run</button>
       <button class="code" type="button" onclick="toggleCode('promises')">
         Code <span>&#9650;</span>
@@ -249,64 +249,10 @@ function render(contents) {
 }</code></pre>
     </div>
   </div>
-
-  <div class="card promisesArray">
-    <h3>
-      <a href="https://github.com/nem035/js-async-fun#promises">Promises</a> Array Solution
-      <button class="run" type="button" onclick="promisesArray()">Run</button>
-      <button class="code" type="button" onclick="toggleCode('promisesArray')">
-        Code <span>&#9650;</span>
-      </button>
-    </h3>
-    <div class="col">
-      <h4>Render</h4>
-      <div class="item file1 file"></div>
-      <div class="item file2 file"></div>
-      <div class="item file3 file"></div>
-    </div>
-    <div class="col">
-      <h4>Received</h4>
-      <div class="item file1 timer received">
-        <div class="loader">file1</div>
-      </div>
-      <div class="item file2 timer received">
-        <div class="loader">file2</div>
-      </div>
-      <div class="item file3 timer received">
-        <div class="loader">file3</div>
-      </div>
-    </div>
-    <div class="code-container">
-      <pre><code> // create an array of promises (and make parallel request for the contents)
-let promises = ['file1', 'file2', 'file3'].map(getFile);
-
-// reduce all file promises to a single promise, while rendering each file in order
-promises.reduce(function(chain, promise) {
-  return chain
-    .then(function() {
-      return promise;
-    }).then(render);
-}, Promise.resolve())
-.then(function() {
-  console.log('Complete!');
-});
-
-// A promise maker
-function getFile(file) {
-  return new Promise(function(resolve) {
-    getFromServer(file, resolve);
-  });
-}
-
-function render(contents) {
-  // render contents to DOM
-}</code></pre>
-    </div>
-  </div>
-
+  
   <div class="card generators">
     <h3>
-      <a href="https://github.com/nem035/js-async-fun#generators">Generators</a> & <a href="https://github.com/nem035/js-async-fun#promises">Promises</a> Solution
+      <a id="generators" href="https://github.com/nem035/js-async-fun#generators">Generators</a> & <a href="https://github.com/nem035/js-async-fun#promises">Promises</a> Solution
       <button class="run" type="button" onclick="generators()">Run</button>
       <button class="code" type="button" onclick="toggleCode('generators')">
         Code <span>&#9650;</span>
