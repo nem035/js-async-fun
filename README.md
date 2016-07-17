@@ -224,7 +224,7 @@ let timer = new Promise(function(_, reject) {
 
 Promise.race([ p, timer ]).then( success, fail );
 ```
-[Problem](https://github.com/nem035/js-async-fun#problem) [Solution using thunks](https://nem035.github.io/js-async-fun/#promises)
+[Problem](https://github.com/nem035/js-async-fun#problem) [Solution using promises](https://nem035.github.io/js-async-fun/#promises)
 
 ### Generators
 
@@ -324,4 +324,4 @@ function getData(d) {
 }
 ```
 
-[Problem](https://github.com/nem035/js-async-fun#problem) [Solution using thunks](https://nem035.github.io/js-async-fun/#generators)
+[Problem](https://github.com/nem035/js-async-fun#problem) [Solution using generators](https://nem035.github.io/js-async-fun/#generators)
