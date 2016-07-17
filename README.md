@@ -92,7 +92,7 @@ thunk(function(sum) {
 Thunks produce **time-independent**
 wrappers around values.
 
-Thunks are the basis for Promises.
+Thunks are the basis for promises.
 
 Additionally, thunks can be
 lazy or active.
@@ -142,7 +142,7 @@ the Inversion of Control
 provided by callbacks, giving
 the control back to us.
 
-A Promise can be imagined as
+A promise can be imagined as
 an event listener with a `then`
 event.
 
@@ -155,16 +155,16 @@ promise.then(function success() {
 })
 ```
 
-How do Promises solve callback hell
+How do promises solve callback hell
 when they still use callbacks? Can't
-a Promise just call my callback twice?
+a promise just call my callback twice?
 Or not at all?
 
 Promises are **guaranteed** to only be
 resolvable once, with either success OR
 error and are immutable once resolved.
 Meaning the code within a promise runs
-once. After resolving, the Promise
+once. After resolving, the promise
 becomes bound to the value with which
 it resolved and is immutable.
 
@@ -181,11 +181,11 @@ promise.then((result) => {
 });
 ```
 
-In other words, a Promise is a pattern
+In other words, a promise is a pattern
 for managing our callbacks in a **trustable**
 fashion.
 
-Additionally, Promises are chainable!
+Additionally, promises are chainable!
 
 ```javascript
 // both request happen concurrently ("in parallel")
@@ -200,7 +200,7 @@ license.then(function() {
 });
 ```
 
-What about a Promise that never resolves?
+What about a promise that never resolves?
 Well, the way to deal with this is similar
 to how we would deal with any async code
 that might never run, which is to setup
@@ -210,13 +210,135 @@ an array of promises and resolves as soon
 as any of them resolve (or reject).
 
 ```javascript
-  let p = trySomeAsyncThingThatMightNeverFinish();
-  let timer = new Promise((_, reject) => {
-    setTimeout(() => {
-      reject('Timeout!');
-    });
+let p = trySomeAsyncThingThatMightNeverFinish();
+let timer = new Promise((_, reject) => {
+  setTimeout(() => {
+    reject('Timeout!');
   });
+});
 
-  Promise.race([ p, timer ])
-    .then( success, fail );
+Promise.race([ p, timer ])
+  .then( success, fail );
+```
+
+### Generators
+If promises are there to solve the
+Inversion of Control problem,
+generators are there to solve the
+non-sequential reasoning problem.
+
+For the most part, JS has the semantic
+where code **runs to completion**,
+which allows us to reason in a
+single-threaded fashion. However,
+**generators do not have a run to completion**
+semantic.
+
+In other words, generators allow us
+to syntactically declare state machines.
+Simply put, generators are functions that
+can be paused and resumed where the pausing
+**blocks code locally in the generator**,
+leaving all other code unaffected.
+
+A generator function returns an iterator,
+which has a method `next` that, when
+called, run the generator to the first
+`yield` and returns the yielded value in
+the form:
+
+```javascript
+{
+  value: yieldedValue,
+  done: false
+}
+```
+The generator remains paused until next time
+we call `next` on it, which continues from
+the last `yield` and runs to the next one
+and so on. If no `yield` is found, generator
+returns anything that the function returns
+as the value with the `done` flag set as `true`.
+
+We can also pass values to generators through
+the `next` method, which the generator then
+returns from the `yield`.
+
+```javascript
+function *gen() {
+  const a = 1 + (yield 'The meaning');
+  const b = 1 + (yield 'of life is');
+  return (a + b);
+}
+
+// create an iterator from a generator
+let iter = gen();
+// run until the first yield and return its yielded value
+let first = iter.next();    // { value: 'The meaning', done: false }
+// pass 30 as the return from the first yield and run to the second yield and return its yielded value
+let second = iter.next(30); // { value: 'of life is', done: false }
+// pass 10 as the return from the second yield and run until the return statement and return the value
+let result = iter.next(10); // { value: 42, done: true }
+
+console.log(`${first.value} ${second.value} ${result.value}`);
+```
+
+Generators do not have to fully finish. It's
+completely ok to partially consume a generator.
+
+As far as asynchronous behavior, generators
+enable us to write synchronous looking
+asynchronous code.
+
+```javascript
+function *gen() {
+  const a = 1 + (yield getData(30));
+  const b = 1 + (yield getData(10));    
+  console.log(`The meaning of life is ${a + b}`);
+}
+
+let iter = gen();
+iter.next();
+
+function getData(d) {
+  setTimeout(function() {
+    iter.next(d);
+  }, 1000);
+}
+```
+
+The same way thunks & promises
+factor out time as a concern,
+generators factor out
+asynchronicity itself as an issue.
+By combining generators and
+promises, we can combine the
+reliable nature of  promises with
+the sequential nature of generators
+to achieve safe, trustable,
+asynchronous code.
+
+```javascript
+function *gen() {
+  const p1 = getData(30);
+  const p2 = getData(10);
+  const a = 1 + (yield p1);
+  const b = 1 + (yield p2);    
+  yield(`The meaning of life is ${a + b}`);
+}
+
+let iter = gen();
+iter.next().value.then(function(val1) {
+  iter.next(val1).value.then(function(val2) {
+    console.log(iter.next(val2).value);        
+  });
+});
+
+function getData(d) {
+  return new Promise((resolve) => {
+    setTimeout(function() {
+      resolve(d);
+    }, 1000);
+  });
+}
 ```

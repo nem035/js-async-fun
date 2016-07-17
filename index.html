@@ -26,7 +26,7 @@
 
   <div class="card callbacks">
     <h3>
-      Callbacks
+      Callbacks Solution
       <button class="run" type="button" onclick="callbacks()">Run</button>
       <button class="code" type="button" onclick="toggleCode('callbacks')">
         Code <span>&#9650;</span>
@@ -110,7 +110,7 @@ function render(contents) {
 
   <div class="card thunks">
     <h3>
-      Thunks
+      Thunks Solution
       <button class="run" type="button" onclick="thunks()">Run</button>
       <button class="code" type="button" onclick="toggleCode('thunks')">
         Code <span>&#9650;</span>
@@ -183,7 +183,7 @@ function render(contents) {
 
   <div class="card promises">
     <h3>
-      Promises
+      Promises Solution
       <button class="run" type="button" onclick="promises()">Run</button>
       <button class="code" type="button" onclick="toggleCode('promises')">
         Code <span>&#9650;</span>
@@ -241,7 +241,7 @@ function render(contents) {
 
   <div class="card promisesArray">
     <h3>
-      Promises Array
+      Promises Array Solution
       <button class="run" type="button" onclick="promisesArray()">Run</button>
       <button class="code" type="button" onclick="toggleCode('promisesArray')">
         Code <span>&#9650;</span>
@@ -290,9 +290,78 @@ function render(contents) {
     </div>
   </div>
 
+  <div class="card generators">
+    <h3>
+      Generators & Promises Solution
+      <button class="run" type="button" onclick="generators()">Run</button>
+      <button class="code" type="button" onclick="toggleCode('generators')">
+        Code <span>&#9650;</span>
+      </button>
+    </h3>
+    <div class="col">
+      <h4>Render</h4>
+      <div class="item file1 file"></div>
+      <div class="item file2 file"></div>
+      <div class="item file3 file"></div>
+    </div>
+    <div class="col">
+      <h4>Received</h4>
+      <div class="item file1 timer received">
+        <div class="loader">file1</div>
+      </div>
+      <div class="item file2 timer received">
+        <div class="loader">file2</div>
+      </div>
+      <div class="item file3 timer received">
+        <div class="loader">file3</div>
+      </div>
+    </div>
+    <div class="code-container">
+      <pre><code>runner(gen());
+
+// A generator
+function* gen() {
+
+  // parallel requests
+  const promise1 = getFile('file1');
+  const promise2 = getFile('file2');
+  const promise3 = getFile('file3');
+
+  // sequential renders
+  render(yield promise1);
+  render(yield promise2);
+  render(yield promise3);
+
+  console.log('Complete!');
+}
+
+// A generator runner
+function runner(iter, prev) {
+  let promise = iter.next(prev).value;
+  if (promise) {
+    promise.then(file => {
+      runner(iter, file);
+    });
+  }
+}
+
+// A promise maker
+function getFile(file) {
+  return new Promise(resolve => {
+    getFromServer(file, resolve);
+  });
+}
+
+function render(contents) {
+  // render contents to DOM
+}</code></pre>
+    </div>
+  </div>
+
   <script src="./utils.js"></script>
   <script src="./callbacks.js"></script>
   <script src="./thunks.js"></script>
   <script src="./promises.js"></script>
+  <script src="./generators.js"></script>
 </body>
 </html>
