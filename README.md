@@ -354,16 +354,13 @@ function *gen() {
   const value1 = yield p1;
   const value2 = yield p2;   
 
-  // finish
-  yield(value1 + value2);
+  console.log(`The meaning of life is ${value1 + value2}`);
 }
 
 // run promises in order (recursively)
 function run(iter, prev) {
   let result = iter.next(prev).value;
-  if (typeof result === 'number') {
-    console.log(`The meaning of life is ${result}`);
-  } else if (result) {
+  if (result) {
     result.then(function(file) {
       run(iter, file);
     });
