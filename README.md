@@ -161,7 +161,7 @@ a Promise just call my callback twice?
 Or not at all?
 
 Promises are **guaranteed** to only be
-resolved once, with either success OR
+resolvable once, with either success OR
 error and are immutable once resolved.
 Meaning the code within a promise runs
 once. After resolving, the Promise
@@ -198,4 +198,25 @@ license.then(function() {
   // here we know that we have a license and a car
   car.drive();
 });
+```
+
+What about a Promise that never resolves?
+Well, the way to deal with this is similar
+to how we would deal with any async code
+that might never run, which is to setup
+a timer. A convenient method we can use
+for this is [Promise.race](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race), which takes
+an array of promises and resolves as soon
+as any of them resolve (or reject).
+
+```javascript
+  let p = trySomeAsyncThingThatMightNeverFinish();
+  let timer = new Promise((_, reject) => {
+    setTimeout(() => {
+      reject('Timeout!');
+    });
+  });
+
+  Promise.race([ p, timer ])
+    .then( success, fail );
 ```
