@@ -11,7 +11,7 @@ Fun with Asynchronous JavaScript using various patterns to solve the following p
 
 > Output the string ``"Complete!"`` after all files are rendered.
 
-## [Problem Solutions & Tests](https://nem035.github.io/js-async-fun/)
+## [Problem Solutions](https://nem035.github.io/js-async-fun/)
 
 ## Async Patterns
 
