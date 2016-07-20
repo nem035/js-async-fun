@@ -208,19 +208,14 @@ the untrustability (Inversion of Control) provided by callbacks, giving the cont
 One way to imagine a promise is like an event listener with a `then` event.
 
 ```javascript
-let promise = getSomeDataAndReturnAPromise();
-
 // pseudo code
 let listener = getSomeDataAndReturnAPromise();
 listener.on('success', success);
 listener.on('fail', fail);
 
 // actual code
-promise.then(function success() {
-  // all is good
-}, function fail() {
-  // error
-})
+let promise = getSomeDataAndReturnAPromise();
+promise.then(success, fail);
 ```
 
 **But wait**, how do promises solve callback hell when they still use callbacks? Can't a promise just call my callback twice? Or not at all?
@@ -236,7 +231,7 @@ promise.then(function(result) {
   console.log(result); // 1
 });
 promise.then(function(result) {
-  console.log(result); // still 1
+  console.log(`still ${result}`); // still 1
 });
 ```
 
