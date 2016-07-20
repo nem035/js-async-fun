@@ -21,7 +21,7 @@ Fun with Asynchronous JavaScript using various patterns to solve the following p
 
 Although being the building blocks of asynchronous programming, callbacks on their own have 2 core deficiencies:
 
-- Inversion of Control (we don't know if/when/how many times our code is called - its outside of our control)
+- Can't be trusted - (Inversion of Control -> we don't know if/when/how many times our code is called - its outside of our control)
 - Non-sequential (un)reasoning (we don't know in what order separate callbacks have executed)
 
 **More in depth**
@@ -35,7 +35,7 @@ Callbacks introduce what is known as Inversion of Control where the code is conc
 
 ```javascript
 // first half
-setTimeout(function() {
+someAsyncFunction(function() {
   // second half
   // we are not in control if/when/how this gets executed
 });
@@ -43,7 +43,7 @@ setTimeout(function() {
 
 This introduces trust issues with the other party executing our callback. We have to trust that they will call it in the exact way we need them to and exactly as many times as we need them to but we have no guarantees on how the code actually gets called and if it gets called at all.
 
-If we are executing multiple asynchronous code blocks, each with their own callback, the callbacks themselves do not provide us with a mechanism to "react" to their results in a sequential manner, other than nesting them within one another which would defy the purpose of concurrent ("parallel") asynchronous code since each async block would wait on the previous before running.
+If we are executing multiple asynchronous code blocks in concurrently (in "parallel"), each with their own callback, the callbacks themselves do not provide us with a mechanism to "react" to their results in a sequential manner.
 
 ```javascript
 getThingOneAsynchronously(function(value1) {
@@ -105,7 +105,7 @@ function getData(d, cb) {
 
 **TLDR;**
 
-Thunks are functions that tackle the issue of async programming by **eliminating time as a concern** and serving as wrappers for values obtained in an async manner. They achieve this by wrapping the async code and the callback in a closure and call the callback only after the value is received. Unlike plain callbacks, thunks return immediately but call the callback provided to them later, once their internal async operation provides a value.
+Thunks are functions that tackle the issue of async programming by **eliminating time as a concern** and serving as wrappers for values that will be obtained later. They achieve this by wrapping the async code and the callback in a closure and **call the callback only after the value is received**. Unlike plain callbacks, thunks return immediately but call the callback provided to them later, once their internal async operation provides a value.
 
 **More in depth**
 
@@ -143,7 +143,7 @@ thunk(function(sum) {
 });
 ```
 
-Thunks produce **time-independent** wrappers around values and are the basis for promises.
+Thunks produce **time-independent** wrappers around values and are the basis for [promises](https://github.com/nem035/js-async-fun#promises).
 
 Additionally, thunks can be lazy or active.
 
@@ -198,17 +198,24 @@ function getData(d, cb) {
 
 Promises are wrappers for future values. They:
 - **eliminate time as a concern** from async code by conceptually serving as an event listener for the `"then"` event
-- **eliminate the issues of trust and of Inversion of Control** by serving as a callback manager, internally managing the execution of our callbacks in a reliable manner.
+- **eliminate the issues of trust and of Inversion of Control** by serving as a callback manager, internally managing the execution of our callbacks in a trustable manner.
 
 **More in depth**
 
 Promises represent wrappers around future values. They un-invert
-the Inversion of Control provided by callbacks, giving the control back to us.
+the untrustability (Inversion of Control) provided by callbacks, giving the control back to us.
 
-A promise can be imagined as an event listener with a `then` event.
+One way to imagine a promise is like an event listener with a `then` event.
 
 ```javascript
-let promise = getSomeDataWithPromise();
+let promise = getSomeDataAndReturnAPromise();
+
+// pseudo code
+let listener = getSomeDataAndReturnAPromise();
+listener.on('success', success);
+listener.on('fail', fail);
+
+// actual code
 promise.then(function success() {
   // all is good
 }, function fail() {
@@ -216,9 +223,9 @@ promise.then(function success() {
 })
 ```
 
-How do promises solve callback hell when they still use callbacks? Can't a promise just call my callback twice? Or not at all?
+**But wait**, how do promises solve callback hell when they still use callbacks? Can't a promise just call my callback twice? Or not at all?
 
-Promises are **guaranteed** to only be resolvable once, with either success OR error and are immutable once resolved. Meaning the code within a promise runs once. After resolving, the promise becomes bound to the value with which it resolved and cannot be changed.
+Promises are **guaranteed** to only be resolvable once, with either success OR error and are immutable once resolved. Meaning the code within a promise runs once. After resolving, the promise becomes bound to the value with which it resolved and that value cannot be changed. Any future resolving of the same promise will **always return the same value** 
 
 ```javascript
 let promise = new Promise(function(resolve, reject) {
@@ -235,7 +242,7 @@ promise.then(function(result) {
 
 In other words, a promise is a pattern for managing our callbacks in a **trustable** fashion.
 
-Additionally, promises are chainable, providing cleaner, sequential looking async code,
+Ppromises are also chainable, providing cleaner, sequential looking async code,
 which is easier to reason about and requires no nesting.
 
 ```javascript
@@ -298,9 +305,7 @@ What about a promise that never resolves? Well, the way to deal with this is sim
 
 ```javascript
 // promise that never resolves
-let promise = new Promise(function() {
-
-});
+let promise = new Promise(function() {});
 
 // timed promise that rejects after 3 seconds
 let timer = new Promise(function(_, reject) {
@@ -310,9 +315,7 @@ let timer = new Promise(function(_, reject) {
 });
 
 function success() {}
-function fail(err) {
-  console.error(err);
-}
+function fail(err) { console.error(err); }
 
 Promise.race([ promise, timer ]).then( success, fail );
 ```
@@ -322,7 +325,7 @@ Promise.race([ promise, timer ]).then( success, fail );
 
 **TLDR;**
 
-Generators solve the problem of non-sequential reasoning in asynchronous programming by allowing us to write async code in a synchronous manner. When combined with promises, they adopt the trust and reliability of promises and provide an API to sequentially execute asynchronous code, using promises as wrappers for future values.
+Generators solve the problem of non-sequential reasoning in asynchronous programming by **allowing us to write async code in a synchronous manner**. When combined with promises, they adopt the trustworthiness and reliability of promises and provide an API to sequentially execute asynchronous code, using promises as wrappers for future values.
 
 **More in depth**
 
@@ -332,9 +335,14 @@ For the most part, JS has the semantic where code **runs to completion**, which 
 
 In other words, generators allow us to syntactically declare state machines. Simply put, generators are functions that can be paused and resumed where the **pausing blocks code locally in the generator**, leaving all other code unaffected.
 
-A generator function returns an iterator, which has a method `next` that, when
-called, runs the generator to the first `yield` and returns the yielded value in
-the form:
+```javascript
+function *gen() {
+  yield 'pause here';     // yield means pause here and return the string 'pause here'
+  return 'now I finished';
+}
+```
+
+A generator function returns an iterator, which has a method `next` that, when called, runs the generator to the first `yield` and returns the yielded value as a plain JS object with two fields:
 
 ```javascript
 {
@@ -342,9 +350,10 @@ the form:
   done: false
 }
 ```
-The generator remains paused until next time we call `next` on it, which continues from the last `yield` and runs to the next one and so on. If no `yield` is found, generator returns anything that its function block returns as the `value` with the `done` flag set as `true`.
 
-Besides being able to pause execution and provide data, generators can also receive data and resume execution. This is also done through the `next` method, where wi can pass values which are then returned from the currently paused `yield`.
+The generator remains paused until next time we call `next` on it, which continues from our current paused position and runs to the next `yield` and so on. If no `yield` is found, generator returns like any other JS function, by returning whatever was specified with the `return` statement or `undefined`. Anything that was specified as the return value becomes the `value` of the returned object and the `done` flag gets set as `true`.
+
+Besides being able to pause execution and provide data, generators can also receive data and resume execution. This is also done through the `next` method where we can pass values which are then returned from the currently paused `yield`.
 
 ```javascript
 function *gen() {
@@ -367,8 +376,6 @@ let result = iter.next(10); // { value: 42, done: true }
 
 console.log(`${first.value} ${second.value} ${result.value}`);
 ```
-
-Generators do not have to fully finish. It's completely ok to partially consume a generator.
 
 Generators enable us to write synchronous looking asynchronous code.
 
