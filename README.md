@@ -68,20 +68,18 @@ someAsyncFunction(function() {
 
 This introduces trust issues with the other party executing our callback. We have to trust that they will call it in the exact way we expect them to and exactly as many times as we need them to but we have no guarantees on how the code actually gets called and if it gets called at all.
 
-The other main problem with callbacks is that they, on their own, have no sense of execution order - they are inherently non-sequential portions of code. When we have two or more separate callbacks there is no way for us to determine in which order those callbacks have executed.
-
-If we are executing multiple asynchronous code blocks concurrently (in "parallel"), each with their own callback, the callbacks themselves do not provide us with a mechanism to "react" to their results in a sequential manner.
+The other main problem with callbacks is that they, on their own, have no sense of execution order - they are inherently non-sequential portions of code. When we have two or more separate callbacks there is no way for us to determine in which order those callbacks have executed. This isn't a problem if we are performing asynchronous tasks in order but what if we are executing multiple asynchronous code blocks concurrently (in "parallel"), each with their own callback? In this case, callbacks themselves do not provide us with a mechanism to "react" to their results in a sequential manner.
 
 ```javascript
+// concurrent ("parallel") requests
 getThingOneAsynchronously(function(value1) {
   // here we have value 1
 });
-
 getThingTwoAsynchronously(function(value2) {
   // here we have value 2
 });
 
-// What about code that needs both `value1` and `value2`?
+// What about code that needs to run when we receive both `value1` and `value2`?
 ```
 
 The only way we could handle this is to maintain some sort of shared global state outside of the callbacks where we can keep track of execution order.
@@ -125,7 +123,7 @@ function getData(d, cb) {
 
 However, what if we wanted to get 5 things in the same manner? What about 10 things? Code would quickly become complex, bug-prone and hard to maintain.
 
-[Problem](https://github.com/nem035/js-async-fun#problem) [Solution using callbacks](https://nem035.github.io/js-async-fun/#callbacks)
+#### [Problem](https://github.com/nem035/js-async-fun#problem) [Solution using callbacks](https://nem035.github.io/js-async-fun/#callbacks)
 
 ### Thunks
 
