@@ -15,7 +15,7 @@ Fun with Asynchronous JavaScript using (and comparing) various patterns to solve
 
 ## Async Patterns
 
-### [Callbacks](https://en.wikipedia.org/wiki/Callback_%28computer_programming%29) (Hell)
+### [Callbacks](https://en.wikipedia.org/wiki/Callback_%28computer_programming%29) (Hell) ([MDN](https://developer.mozilla.org/en-US/docs/Mozilla/js-ctypes/Using_js-ctypes/Declaring_and_Using_Callbacks))
 
 **TLDR;**
 
@@ -216,7 +216,7 @@ function getData(d, cb) {
 
 #### [Problem](https://github.com/nem035/js-async-fun#problem) [Solution using thunks](https://nem035.github.io/js-async-fun/#thunks)
 
-### [Promises](https://en.wikipedia.org/wiki/Futures_and_promises)
+### [Promises](https://en.wikipedia.org/wiki/Futures_and_promises) ([MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise))
 
 **TLDR;**
 
@@ -339,7 +339,7 @@ Promise.race([ promise, timer ]).then( success, fail );
 ```
 [Problem](https://github.com/nem035/js-async-fun#problem) [Solution using promises](https://nem035.github.io/js-async-fun/#promises)
 
-### [Generators](https://en.wikipedia.org/wiki/Generator_%28computer_programming%29)
+### [Generators](https://en.wikipedia.org/wiki/Generator_%28computer_programming%29) ([MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator))
 
 **TLDR;**
 
