@@ -1,5 +1,5 @@
 # JS-Async-Fun
-Fun with Asynchronous JavaScript using various patterns to solve the following problem
+Fun with Asynchronous JavaScript using (and comparing) various patterns to solve the following problem
 
 ## Problem
 
@@ -26,6 +26,32 @@ Although being the building blocks of asynchronous programming, callbacks on the
 
 **More in depth**
 
+First thing most people think of when they hear "Callback Hell", is the nested callback approach (also known as the pyramid of doom):
+
+```javascript
+getThingOneAsynchronously(function(value1) {
+  // here we have value 1
+});
+
+getThingTwoAsynchronously(function(value2) {
+  // here we have value 2
+});
+
+getThingThreeAsynchronously(function(value3) {
+  // here we have value 3
+});
+
+getThingOneAsynchronously(function(value1) {
+  getThingTwoAsynchronously(function(value2) {
+    getThingThreeAsynchronously(function(value3) {
+    // at this point, after all async portions have finished (one after the other!), we will have all the values
+    });
+  });
+});
+```
+
+However, this code can easily be cleaned up with named functions and/or variables that hold these functions but it would still have the inherent problems that callbacks have.
+
 One of the main issues that callbacks introduce is the problem of [Inversion of Control](https://en.wikipedia.org/wiki/Inversion_of_control). 
 As an example, we can conceptually split our programs into two main parts:
 
@@ -42,7 +68,7 @@ someAsyncFunction(function() {
 
 This introduces trust issues with the other party executing our callback. We have to trust that they will call it in the exact way we expect them to and exactly as many times as we need them to but we have no guarantees on how the code actually gets called and if it gets called at all.
 
-Callbacks by themselves have no sense of execution order - they are inherently non-sequential portions of code. When we have two or more separate callbacks there is no way for us to determine in which order those callbacks have executed. 
+The other main problem with callbacks is that they, on their own, have no sense of execution order - they are inherently non-sequential portions of code. When we have two or more separate callbacks there is no way for us to determine in which order those callbacks have executed.
 
 If we are executing multiple asynchronous code blocks concurrently (in "parallel"), each with their own callback, the callbacks themselves do not provide us with a mechanism to "react" to their results in a sequential manner.
 
@@ -96,6 +122,9 @@ function getData(d, cb) {
   }, 1000);
 }
 ```
+
+However, what if we wanted to get 5 things in the same manner? What about 10 things? Code would quickly become complex, bug-prone and hard to maintain.
+
 [Problem](https://github.com/nem035/js-async-fun#problem) [Solution using callbacks](https://nem035.github.io/js-async-fun/#callbacks)
 
 ### Thunks
