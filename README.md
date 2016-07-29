@@ -125,11 +125,11 @@ However, what if we wanted to get 5 things in the same manner? What about 10 thi
 
 #### [Problem](https://github.com/nem035/js-async-fun#problem) [Solution using callbacks](https://nem035.github.io/js-async-fun/#callbacks)
 
-### Thunks
+### [Thunks](https://en.wikipedia.org/wiki/Thunk)
 
 **TLDR;**
 
-Thunks are functions that tackle the issue of async programming by **eliminating time as a concern** and serving as wrappers for values that will be obtained later. They achieve this by wrapping the async code and the callback in a closure and **call the callback only after the value is received**. Unlike plain callbacks, thunks return immediately but call the callback provided to them later, once their internal async operation provides a value.
+Thunks, in async programming, are functions that tackle the issue of asynchonocity by **eliminating time as a concern** and serving as wrappers for values that will be obtained later. They achieve this by wrapping the async code and the callback in a closure and **call the callback only after the value is received**. Unlike plain callbacks, thunks return immediately but call the callback provided to them later, once their internal async operation provides a value.
 
 **More in depth**
 
@@ -214,7 +214,7 @@ function getData(d, cb) {
 }
 ```
 
-[Problem](https://github.com/nem035/js-async-fun#problem) [Solution using thunks](https://nem035.github.io/js-async-fun/#thunks)
+#### [Problem](https://github.com/nem035/js-async-fun#problem) [Solution using thunks](https://nem035.github.io/js-async-fun/#thunks)
 
 ### Promises
 
