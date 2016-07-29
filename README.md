@@ -216,7 +216,7 @@ function getData(d, cb) {
 
 #### [Problem](https://github.com/nem035/js-async-fun#problem) [Solution using thunks](https://nem035.github.io/js-async-fun/#thunks)
 
-### Promises
+### [Promises](https://en.wikipedia.org/wiki/Futures_and_promises)
 
 **TLDR;**
 
@@ -226,7 +226,7 @@ Promises are wrappers for future values. They:
 
 **More in depth**
 
-Promises represent wrappers around future values. They un-invert
+Promises represent wrappers around future values. They invert
 the untrustability (Inversion of Control) provided by callbacks, giving the control back to us.
 
 One way to imagine a promise is like an event listener with a `then` event.
@@ -244,7 +244,7 @@ promise.then(success, fail);
 
 **But wait**, how do promises solve callback hell when they still use callbacks? Can't a promise just call my callback twice? Or not at all?
 
-Promises are **guaranteed** to only be resolvable once, with either success OR error and are immutable once resolved. Meaning the code within a promise runs once. After resolving, the promise becomes bound to the value with which it resolved and that value cannot be changed. Any future resolving of the same promise will **always return the same value** 
+Promises are **guaranteed** to only be resolvable once, with either success OR error and are immutable once resolved. Meaning the code within a promise runs once. After resolving or rejecting, the promise becomes bound to the value with which it resolved and that value cannot be changed. Any future resolutions of the same promise will **always return the same value** 
 
 ```javascript
 let promise = new Promise(function(resolve, reject) {
@@ -261,8 +261,7 @@ promise.then(function(result) {
 
 In other words, a promise is a pattern for managing our callbacks in a **trustable** fashion.
 
-Ppromises are also chainable, providing cleaner, sequential looking async code,
-which is easier to reason about and requires no nesting.
+Ppromises are also chainable, providing cleaner, sequential looking async code, which is easier to reason about and requires no nesting.
 
 ```javascript
 // concurrent ("parallel") requests
