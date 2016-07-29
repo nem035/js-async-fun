@@ -339,7 +339,7 @@ Promise.race([ promise, timer ]).then( success, fail );
 ```
 [Problem](https://github.com/nem035/js-async-fun#problem) [Solution using promises](https://nem035.github.io/js-async-fun/#promises)
 
-### Generators
+### [Generators](https://en.wikipedia.org/wiki/Generator_%28computer_programming%29)
 
 **TLDR;**
 
