@@ -15,23 +15,22 @@ Fun with Asynchronous JavaScript using various patterns to solve the following p
 
 ## Async Patterns
 
-### Callbacks (Hell)
+### [Callbacks](https://en.wikipedia.org/wiki/Callback_%28computer_programming%29) (Hell)
 
 **TLDR;**
 
 Although being the building blocks of asynchronous programming, callbacks on their own have 2 core deficiencies:
 
-- Can't be trusted - (Inversion of Control -> we don't know if/when/how many times our code is called - its outside of our control)
-- Non-sequential (un)reasoning (we don't know in what order separate callbacks have executed)
+- They **can't be trusted** -> we don't know if/when/how many times our code is called - its outside of our control
+- They **exhibit non-sequential reasoning** -> we don't know in what order separate callbacks have executed
 
 **More in depth**
 
-Callbacks requires us to maintain some sort of state to ensure our reactions to those callbacks happen in a certain order.
-
-Callbacks introduce what is known as Inversion of Control where the code is conceptually split into two parts:
+One of the main issues that callbacks introduce is the problem of [Inversion of Control](https://en.wikipedia.org/wiki/Inversion_of_control). 
+As an example, we can conceptually split our programs into two main parts:
 
 - the one we execute first, and
-- the callbacks which get handed off to the another party (control inversion) to be executed some time later
+- the callbacks which get handed off to the another party (Inversion of Control) to be executed by this party some time later
 
 ```javascript
 // first half
@@ -41,9 +40,11 @@ someAsyncFunction(function() {
 });
 ```
 
-This introduces trust issues with the other party executing our callback. We have to trust that they will call it in the exact way we need them to and exactly as many times as we need them to but we have no guarantees on how the code actually gets called and if it gets called at all.
+This introduces trust issues with the other party executing our callback. We have to trust that they will call it in the exact way we expect them to and exactly as many times as we need them to but we have no guarantees on how the code actually gets called and if it gets called at all.
 
-If we are executing multiple asynchronous code blocks in concurrently (in "parallel"), each with their own callback, the callbacks themselves do not provide us with a mechanism to "react" to their results in a sequential manner.
+Callbacks by themselves have no sense of execution order - they are inherently non-sequential portions of code. When we have two or more separate callbacks there is no way for us to determine in which order those callbacks have executed. 
+
+If we are executing multiple asynchronous code blocks concurrently (in "parallel"), each with their own callback, the callbacks themselves do not provide us with a mechanism to "react" to their results in a sequential manner.
 
 ```javascript
 getThingOneAsynchronously(function(value1) {
@@ -57,38 +58,34 @@ getThingTwoAsynchronously(function(value2) {
 // What about code that needs both `value1` and `value2`?
 ```
 
-The way we would have to deal with this is to introduce some outside control that will be shared among callbacks.
+The only way we could handle this is to maintain some sort of shared global state outside of the callbacks where we can keep track of execution order.
 
 ```javascript
-// a map indicating if values are received
-let received = {
-  value1: false,
-  value2: false
-};
+// flags indicating if a value for each callback is received
+let received1 = false;
+let received2 = false;
 
-// a map holding the data for each value
-let data = {
-  value1: undefined,
-  value2: undefined
-};
+// variables holding the values for each callback
+let value1;
+let value2;
 
 // concurrent ("parallel") requests
-getData(30, function(value1) {
-  received.value1 = true;
-  data.value1 = value1;
+getData(30, function(result) {
+  received1 = true;
+  value1 = result;
 
   // if value 2 was already received, show the result
-  if (received.value2) {
-    console.log(`The meaning of life is ${data.value1 + data.value2}`);
+  if (received2) {
+    console.log(`The meaning of life is ${value1 + value2}`);
   }
 });
-getData(10, function(value2) {
-  received.value2 = true;
-  data.value2 = value2;
+getData(10, function(result) {
+  received2 = true;
+  value2 = result;
 
   // if value 1 was already received, show the result
-  if (received.value1) {
-    console.log(`The meaning of life is ${data.value1 + data.value2}`);
+  if (received1) {
+    console.log(`The meaning of life is ${value1 + value2}`);
   }
 });
 
