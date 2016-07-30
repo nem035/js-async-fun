@@ -85,28 +85,22 @@ function getFile(file) {
     // stop the loop
     // otherwise continue looping
     // and render unrendered files
-    ['file1', 'file2', 'file3'].every(function(file) {
+    const allRendered = ['file1', 'file2', 'file3'].every(function(file) {
       if (contents[file]) {
         if (!rendered[file]) {
           render(contents[file]);
           rendered[file] = true;
-          if (allRendered()) {
-            console.log('Complete!');
-          }
         }
         return true;
       } else {
         return false;
       }
     });
-  });
-}
 
-function allRendered() {
-  return ['file1', 'file2', 'file3']
-    .every(function(file) {
-      return rendered[file];
-    });
+    if (allRendered) {
+      console.log('Complete!');
+    }
+  });
 }
 
 function render(contents) {

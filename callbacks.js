@@ -18,8 +18,6 @@ function callbacks() {
     file3: false
   };
 
-  const allRendered = () => files.every(file => rendered[file]);
-
   files.forEach(file => {
     getFile(file);
   });
@@ -36,20 +34,21 @@ function callbacks() {
       // stop the loop
       // otherwise continue looping
       // and render unrendered files
-      files.every(file => {
+      const allRendered = files.every(file => {
         if (contents[file]) {
           if (!rendered[file]) {
             rendered[file] = true;
             renderCallback(file, contents[file]);
-            if (allRendered()) {
-              finish('callbacks');
-            }
           }
           return true;
         } else {
           return false;
         }
       });
+
+      if (allRendered) {
+        finish('callbacks');
+      }
     });
   }
 }
