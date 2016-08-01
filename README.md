@@ -29,17 +29,6 @@ Although being the building blocks of asynchronous programming, callbacks on the
 First thing most people think of when they hear "Callback Hell", is the nested callback approach (also known as the pyramid of doom):
 
 ```javascript
-getThingOneAsynchronously(function(value1) {
-  // here we have value 1
-});
-
-getThingTwoAsynchronously(function(value2) {
-  // here we have value 2
-});
-
-getThingThreeAsynchronously(function(value3) {
-  // here we have value 3
-});
 
 getThingOneAsynchronously(function(value1) {
   getThingTwoAsynchronously(function(value2) {
