@@ -161,6 +161,37 @@ Thunks produce **time-independent** wrappers around values and are the basis for
 Additionally, thunks can be lazy or active.
 
 - A lazy thunk is a thunk that computes its value the first time it is called, then returns it on all subsequent calls.
+
+```javascript
+// lazy asynchronous thunk maker
+function lazySumThunk(a, b) {
+  let result;
+  return function(cb) {
+    if (typeof result === 'undefined') {
+      // computes the result first time it is called
+      setTimeout(function() {
+        result = a + b;
+        cb(result);
+      }, 1000);
+    } else {
+      // returns the result on each subsequent call
+      cb(result);
+    }
+  }; 
+}
+
+let thunk = lazySumThunk(10, 15);
+
+// first call calculates the result and returns it
+thunk(function(sum) {
+  console.log(sum); // 25
+});
+// second call just returns the already calculate result
+thunk(function(sum) {
+  console.log(sum); // 25
+});
+```
+
 - An active thunk is a thunk that computes its value when created and then returns it on all subsequent calls.
 
 ```javascript
@@ -179,8 +210,10 @@ thunk1(function(value1) {
 function asyncThunk(d) {
   let data;
   let fn;
+  // computes the value as soon as its created
   getData(d, function(res) {
     if (fn) {
+      // returns the value as soon as it receives the value and is called
       fn(res);
     } else {
       data = res;
@@ -188,6 +221,7 @@ function asyncThunk(d) {
   });
   return function(cb) {
     if (data) {
+      // returns the value as soon its called and the value is received
       cb(data);
     } else {
       fn = cb;
