@@ -1,4 +1,7 @@
 # JS-Async-Fun
+
+Inspired by a [FrontendMasters](https://frontendmasters.com/courses/rethinking-async-js) course by [getify](https://www.github.com/getify)
+
 Fun with Asynchronous JavaScript using (and comparing) various patterns to solve the following problem
 
 ## Problem
